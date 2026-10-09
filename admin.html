@@ -85,7 +85,7 @@
         .tools-right button { padding: 11px 15px; }
         .logout-button { background: #4b5060; }
         .admin-tools { margin-bottom: 18px; flex-wrap: wrap; }
-        .folders { justify-content: flex-start; }
+        .folders { justify-content: flex-start; flex-wrap: wrap; }
         .folder-button { padding: 11px 15px; border: 1px solid var(--border); background: var(--surface-raised); }
         .folder-button.active { border-color: var(--accent); background: var(--accent); }
         .table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 10px; }
@@ -143,7 +143,9 @@
             <div class="admin-tools">
                 <div class="folders">
                     <button id="folderOyuncu" class="folder-button active" type="button" onclick="klasorDegistir('Oyuncu')">Oyuncu (<span id="countOyuncu">0</span>)</button>
+                    <button id="folderWhitelist" class="folder-button" type="button" onclick="klasorDegistir('Whitelist')">Whitelist (<span id="countWhitelist">0</span>)</button>
                     <button id="folderMod" class="folder-button" type="button" onclick="klasorDegistir('Moderatör')">Moderatör (<span id="countMod">0</span>)</button>
+                    <button id="folderYetkili" class="folder-button" type="button" onclick="klasorDegistir('Yetkili')">Yetkili (<span id="countYetkili">0</span>)</button>
                 </div>
             </div>
             <div class="table-wrap">
@@ -173,6 +175,7 @@
         const supabaseClient = supabaseConfigured
             ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
             : null;
+        const applicationTypes = ["Oyuncu", "Whitelist", "Moderatör", "Yetkili"];
         let aktifKlasor = "Oyuncu";
 
         const escapeHtml = (value) => String(value ?? "").replace(/[&<>"']/g, (character) => ({
@@ -209,9 +212,12 @@
 
         function klasorDegistir(tur) {
             aktifKlasor = tur;
-            document.getElementById("folderOyuncu").classList.toggle("active", tur === "Oyuncu");
-            document.getElementById("folderMod").classList.toggle("active", tur === "Moderatör");
-            document.getElementById("dynamicHeading").textContent = tur === "Oyuncu" ? "Karakter adı" : "Başvuru alanı";
+            applicationTypes.forEach((type) => {
+                const buttonId = { Oyuncu: "folderOyuncu", Whitelist: "folderWhitelist", Moderatör: "folderMod", Yetkili: "folderYetkili" }[type];
+                document.getElementById(buttonId).classList.toggle("active", tur === type);
+            });
+            document.getElementById("dynamicHeading").textContent =
+                tur === "Oyuncu" || tur === "Whitelist" ? "Karakter adı" : "Başvuru alanı";
             verileriYenile();
         }
 
@@ -236,7 +242,9 @@
 
                 const applications = data || [];
                 document.getElementById("countOyuncu").textContent = applications.filter((item) => item.form_turu === "Oyuncu").length;
+                document.getElementById("countWhitelist").textContent = applications.filter((item) => item.form_turu === "Whitelist").length;
                 document.getElementById("countMod").textContent = applications.filter((item) => item.form_turu === "Moderatör").length;
+                document.getElementById("countYetkili").textContent = applications.filter((item) => item.form_turu === "Yetkili").length;
                 const filtered = applications.filter((item) => item.form_turu === aktifKlasor);
                 if (!filtered.length) {
                     tbody.innerHTML = '<tr><td colspan="5" style="text-align:center">Bu klasörde henüz başvuru yok.</td></tr>';
@@ -248,7 +256,9 @@
                     const options = ["Beklemede", "Onaylandı", "Reddedildi"].map((option) =>
                         `<option value="${option}" ${status === option ? "selected" : ""}>${option}</option>`
                     ).join("");
-                    const headingValue = aktifKlasor === "Oyuncu" ? item.karakter_adi : "Moderatörlük";
+                    const headingValue = aktifKlasor === "Oyuncu" || aktifKlasor === "Whitelist"
+                        ? item.karakter_adi
+                        : item.karakter_adi || `${aktifKlasor} başvurusu`;
                     return `<tr>
                         <td>${escapeHtml(item.discord_adi)}</td>
                         <td>${escapeHtml(item.yas)}</td>

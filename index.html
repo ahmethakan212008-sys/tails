@@ -187,6 +187,16 @@
                     <p class="section-copy">Önce hangi pozisyon için başvurduğunu ve sana nasıl ulaşabileceğimizi belirt.</p>
                     <div class="form-grid">
                         <input type="hidden" id="formType" value="Oyuncu">
+                        <div class="field full">
+                            <label for="registrationType">Kayıt türü</label>
+                            <select id="registrationType" required>
+                                <option value="Oyuncu">Oyuncu kaydı</option>
+                                <option value="Whitelist">Whitelist başvurusu</option>
+                                <option value="Moderatör">Moderatör başvurusu</option>
+                                <option value="Yetkili">Yetkili başvurusu</option>
+                            </select>
+                            <p class="hint">Başvurun seçtiğin türe göre yetkili panelinde ilgili bölümde listelenir.</p>
+                        </div>
                         <div class="field">
                             <label for="discordName">Discord kullanıcı adın</label>
                             <input type="text" id="discordName" maxlength="80" autocomplete="nickname" placeholder="Örnek: kullaniciadi" required>
@@ -248,6 +258,14 @@
                             <label for="moderatorScenario">Bir kural ihlali bildirimi geldiğinde nasıl incelersin?</label>
                             <textarea id="moderatorScenario" maxlength="2000" placeholder="Tarafsız kalmak ve doğru karar vermek için izleyeceğin adımları anlat."></textarea>
                         </div>
+                        <div class="field full hidden" id="whitelistFields">
+                            <label for="characterStory">Karakterinin geçmişi nedir?</label>
+                            <textarea id="characterStory" maxlength="3000" placeholder="Karakterinin nereden geldiğini, geçmişini ve onu şekillendiren olayları anlat."></textarea>
+                        </div>
+                        <div class="field full hidden" id="whitelistGoalsField">
+                            <label for="characterGoals">Karakterin şehirde neler yapmak istiyor?</label>
+                            <textarea id="characterGoals" maxlength="2000" placeholder="Karakterinin hedeflerini ve kurmayı düşündüğün rol hikâyesini anlat."></textarea>
+                        </div>
                     </div>
                 </section>
 
@@ -277,7 +295,9 @@
             <div class="admin-tools">
                 <div class="folder-container">
                     <button id="folderOyuncu" class="folder-btn active" type="button" onclick="klasorDegistir('Oyuncu')">Oyuncu (<span id="countOyuncu">0</span>)</button>
+                    <button id="folderWhitelist" class="folder-btn" type="button" onclick="klasorDegistir('Whitelist')">Whitelist (<span id="countWhitelist">0</span>)</button>
                     <button id="folderMod" class="folder-btn" type="button" onclick="klasorDegistir('Moderatör')">Moderatör (<span id="countMod">0</span>)</button>
+                    <button id="folderYetkili" class="folder-btn" type="button" onclick="klasorDegistir('Yetkili')">Yetkili (<span id="countYetkili">0</span>)</button>
                 </div>
                 <button class="refresh-button" type="button" onclick="verileriYenile()">Yenile</button>
             </div>
@@ -309,6 +329,7 @@
             ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
             : null;
 
+        const applicationTypes = ["Oyuncu", "Whitelist", "Moderatör", "Yetkili"];
         let aktifKlasor = "Oyuncu";
 
         function gondermeDurumunuGuncelle() {
@@ -326,18 +347,41 @@
         })[character]);
 
         function formAlanlariniGuncelle() {
-            const isModerator = document.getElementById("formType").value === "Moderatör";
+            const type = document.getElementById("registrationType").value;
+            const isStaff = type === "Moderatör" || type === "Yetkili";
+            const isWhitelist = type === "Whitelist";
+            document.getElementById("formType").value = type;
             document.getElementById("charName").required = true;
-            document.getElementById("lblCharName").textContent = isModerator
+            document.getElementById("lblCharName").textContent = isStaff
                 ? "Başvurmak istediğin görev / ilgi alanın"
                 : "Karakter adı ve soyadı (IC)";
-            document.getElementById("charName").placeholder = isModerator
+            document.getElementById("charName").placeholder = isStaff
                 ? "Örnek: Oyun moderatörlüğü"
                 : "Örnek: Deniz Yılmaz";
-            document.getElementById("moderatorFields").classList.toggle("hidden", !isModerator);
-            document.getElementById("moderatorScenarioField").classList.toggle("hidden", !isModerator);
-            document.getElementById("moderationExperience").required = isModerator;
-            document.getElementById("moderatorScenario").required = isModerator;
+            document.getElementById("moderatorFields").classList.toggle("hidden", !isStaff);
+            document.getElementById("moderatorScenarioField").classList.toggle("hidden", !isStaff);
+            document.getElementById("moderationExperience").required = isStaff;
+            document.getElementById("moderatorScenario").required = isStaff;
+            document.getElementById("moderationExperience").previousElementSibling.textContent = type === "Yetkili"
+                ? "Daha önce yetkili veya ekip üyesi olarak çalıştın mı? Deneyimini anlat."
+                : "Daha önce moderatörlük yaptın mı? Yaptıysan deneyimini anlat.";
+            document.getElementById("moderationExperience").placeholder = type === "Yetkili"
+                ? "Deneyimin yoksa yetkili ekibine neden katılmak istediğini yaz."
+                : "Deneyimin yoksa moderatörlüğe neden başvurmak istediğini yaz.";
+            document.getElementById("moderatorScenarioField").querySelector("label").textContent = type === "Yetkili"
+                ? "Bir ekip üyesiyle anlaşmazlık yaşarsan nasıl çözersin?"
+                : "Bir kural ihlali bildirimi geldiğinde nasıl incelersin?";
+            document.querySelector('label[for="experience"]').textContent = isStaff
+                ? "Deneyimin ve bu görev için başvurma nedenin"
+                : "Roleplay deneyimin ve bu sunucuya katılma nedenin";
+            document.getElementById("experience").placeholder = isStaff
+                ? "İlgili deneyiminden, güçlü yönlerinden ve ekibe nasıl katkı sağlayacağından bahset."
+                : "Daha önce oynadığın sunuculardan, sevdiğin rol türlerinden ve burada yapmak istediklerinden bahset.";
+            document.getElementById("whitelistFields").classList.toggle("hidden", !isWhitelist);
+            document.getElementById("whitelistGoalsField").classList.toggle("hidden", !isWhitelist);
+            document.getElementById("characterStory").required = isWhitelist;
+            document.getElementById("characterGoals").required = isWhitelist;
+            gondermeDurumunuGuncelle();
         }
 
         function ekranDegistir(id) {
@@ -379,7 +423,9 @@
                 return;
             }
 
-            const isModerator = document.getElementById("formType").value === "Moderatör";
+            const type = document.getElementById("registrationType").value;
+            const isStaff = type === "Moderatör" || type === "Yetkili";
+            const isWhitelist = type === "Whitelist";
             const answers = [
                 `Deneyim ve motivasyon:\n${document.getElementById("experience").value.trim()}`,
                 `Ek bilgiler:\n${document.getElementById("strengths").value.trim() || "Belirtilmedi"}`,
@@ -388,10 +434,16 @@
                 `Anlaşmazlık yaklaşımı:\n${document.getElementById("scenario").value.trim()}`
             ];
 
-            if (isModerator) {
+            if (isStaff) {
                 answers.push(
-                    `Moderatörlük deneyimi ve motivasyonu:\n${document.getElementById("moderationExperience").value.trim()}`,
-                    `Kural ihlali inceleme yaklaşımı:\n${document.getElementById("moderatorScenario").value.trim()}`
+                    `Ekip deneyimi ve motivasyon:\n${document.getElementById("moderationExperience").value.trim()}`,
+                    `Durum değerlendirme yaklaşımı:\n${document.getElementById("moderatorScenario").value.trim()}`
+                );
+            }
+            if (isWhitelist) {
+                answers.push(
+                    `Karakter geçmişi:\n${document.getElementById("characterStory").value.trim()}`,
+                    `Karakter hedefleri:\n${document.getElementById("characterGoals").value.trim()}`
                 );
             }
 
@@ -400,7 +452,7 @@
                 yas: Number(document.getElementById("age").value),
                 karakter_adi: document.getElementById("charName").value.trim(),
                 deneyim: answers.join("\n\n"),
-                form_turu: document.getElementById("formType").value
+                form_turu: type
             };
 
             const submitButton = document.getElementById("submitButton");
@@ -420,9 +472,11 @@
 
         function klasorDegistir(tur) {
             aktifKlasor = tur;
-            document.getElementById("folderOyuncu").classList.toggle("active", tur === "Oyuncu");
-            document.getElementById("folderMod").classList.toggle("active", tur === "Moderatör");
-            document.getElementById("thDinamik").textContent = tur === "Oyuncu" ? "Karakter adı" : "Aktiflik";
+            applicationTypes.forEach((type) => {
+                const buttonId = { Oyuncu: "folderOyuncu", Whitelist: "folderWhitelist", Moderatör: "folderMod", Yetkili: "folderYetkili" }[type];
+                document.getElementById(buttonId).classList.toggle("active", tur === type);
+            });
+            document.getElementById("thDinamik").textContent = tur === "Oyuncu" || tur === "Whitelist" ? "Karakter adı" : "Başvuru alanı";
             verileriYenile();
         }
 
@@ -447,7 +501,9 @@
 
                 const applications = data || [];
                 document.getElementById("countOyuncu").textContent = applications.filter((item) => item.form_turu === "Oyuncu").length;
+                document.getElementById("countWhitelist").textContent = applications.filter((item) => item.form_turu === "Whitelist").length;
                 document.getElementById("countMod").textContent = applications.filter((item) => item.form_turu === "Moderatör").length;
+                document.getElementById("countYetkili").textContent = applications.filter((item) => item.form_turu === "Yetkili").length;
                 const filtered = applications.filter((item) => item.form_turu === aktifKlasor);
 
                 if (filtered.length === 0) {
@@ -457,7 +513,9 @@
 
                 tbody.innerHTML = filtered.map((item) => {
                     const status = item.durum || "Beklemede";
-                    const fieldValue = aktifKlasor === "Oyuncu" ? item.karakter_adi : "Moderatörlük";
+                    const fieldValue = aktifKlasor === "Oyuncu" || aktifKlasor === "Whitelist"
+                        ? item.karakter_adi
+                        : item.karakter_adi || `${aktifKlasor} başvurusu`;
                     const statusOptions = ["Beklemede", "Onaylandı", "Reddedildi"];
                     const options = statusOptions.map((option) =>
                         `<option value="${option}" ${status === option ? "selected" : ""}>${option}</option>`
@@ -489,6 +547,7 @@
             await verileriYenile();
         }
 
+        document.getElementById("registrationType").addEventListener("change", formAlanlariniGuncelle);
         document.getElementById("rpForm").addEventListener("submit", basvuruGonder);
         document.getElementById("rpForm").addEventListener("input", gondermeDurumunuGuncelle);
         document.getElementById("rpForm").addEventListener("change", gondermeDurumunuGuncelle);
