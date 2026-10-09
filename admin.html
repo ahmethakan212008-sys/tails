@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yetkili Paneli | RP Başvuru</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        :root {
+            color-scheme: dark;
+            --bg: #171923;
+            --surface: #202331;
+            --surface-raised: #282c3c;
+            --input: #171a25;
+            --text: #eef0f6;
+            --muted: #a5aabd;
+            --accent: #7885ff;
+            --accent-hover: #6572ec;
+            --border: #383d50;
+            --danger: #f04747;
+        }
+
+        * { box-sizing: border-box; }
+        body {
+            min-height: 100vh;
+            margin: 0;
+            padding: 0 20px 48px;
+            background: radial-gradient(ellipse at top, rgba(88, 101, 242, .16), transparent 55%), var(--bg);
+            color: var(--text);
+            font-family: "Segoe UI", Arial, sans-serif;
+        }
+        button, input, select { font: inherit; }
+        button {
+            border: 0;
+            border-radius: 8px;
+            background: var(--accent);
+            color: white;
+            font-weight: 700;
+            cursor: pointer;
+        }
+        button:hover { background: var(--accent-hover); }
+        button:disabled { opacity: .65; cursor: wait; }
+        .topbar {
+            width: min(100%, 1120px);
+            margin: 0 auto;
+            padding: 18px 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+        }
+        .brand { color: #fff; font-size: 17px; font-weight: 800; }
+        .brand span, .eyebrow { color: #aab2ff; }
+        .page { width: min(100%, 1120px); margin: 24px auto 0; }
+        .card {
+            padding: clamp(20px, 4vw, 36px);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            background: rgba(32, 35, 49, .96);
+            box-shadow: 0 18px 48px rgba(0, 0, 0, .24);
+        }
+        .login-card { width: min(100%, 420px); margin: 10vh auto 0; }
+        .eyebrow { margin: 0 0 8px; font-size: 12px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; }
+        h1 { margin: 0; color: #fff; font-size: clamp(25px, 5vw, 34px); }
+        h2 { color: #fff; }
+        .copy, .notice { color: var(--muted); line-height: 1.6; }
+        .login-card .copy { margin: 12px 0 24px; }
+        label { display: block; margin: 16px 0 7px; font-size: 14px; font-weight: 700; }
+        input, select {
+            width: 100%;
+            padding: 12px 13px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            outline: none;
+            background: var(--input);
+            color: var(--text);
+        }
+        input:focus, select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(120, 133, 255, .16); }
+        .login-button { width: 100%; margin-top: 16px; padding: 13px 18px; }
+        .error { min-height: 20px; margin: 12px 0 0; color: #ff9b9b; font-size: 13px; }
+        .admin-header, .admin-tools, .folders { display: flex; align-items: center; justify-content: space-between; gap: 14px; }
+        .admin-header { margin-bottom: 24px; }
+        .admin-header h1 { font-size: clamp(23px, 4vw, 30px); }
+        .tools-right { display: flex; gap: 10px; }
+        .tools-right button { padding: 11px 15px; }
+        .logout-button { background: #4b5060; }
+        .admin-tools { margin-bottom: 18px; flex-wrap: wrap; }
+        .folders { justify-content: flex-start; }
+        .folder-button { padding: 11px 15px; border: 1px solid var(--border); background: var(--surface-raised); }
+        .folder-button.active { border-color: var(--accent); background: var(--accent); }
+        .table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 10px; }
+        table { width: 100%; border-collapse: collapse; background: var(--input); }
+        th, td { padding: 12px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; }
+        th { background: #191c27; color: #fff; font-size: 13px; }
+        td { font-size: 13px; }
+        .details-row td { color: var(--muted); line-height: 1.6; white-space: pre-wrap; }
+        details summary { color: #d8dcff; cursor: pointer; font-weight: 700; }
+        .status-select { min-width: 130px; margin: 0; padding: 8px; }
+        .notice { margin: 16px 0 0; font-size: 13px; }
+        .warning { padding: 12px 14px; border: 1px solid #805d2c; border-radius: 8px; background: rgba(128, 93, 44, .15); color: #f1d49f; }
+        .hidden { display: none !important; }
+        @media (max-width: 640px) {
+            body { padding: 0 14px 30px; }
+            .topbar { padding: 14px 0; }
+            .brand { font-size: 15px; }
+            .admin-header, .admin-tools { align-items: stretch; flex-direction: column; }
+            .tools-right { width: 100%; }
+            .tools-right button { flex: 1; }
+            .folder-button { padding: 10px 9px; font-size: 13px; }
+        }
+    </style>
+</head>
+<body>
+    <header class="topbar">
+        <div class="brand">ROLEPLAY <span>YÖNETİM</span></div>
+        <a href="index.html" style="color:#c6cbff">Başvuru formuna dön</a>
+    </header>
+
+    <main>
+        <section id="loginScreen" class="card login-card">
+            <p class="eyebrow">Yetkili erişimi</p>
+            <h1>Başvuru paneli</h1>
+            <p class="copy">Gönderilen başvuruları görüntülemek ve durumlarını güncellemek için yetkili şifresiyle giriş yap.</p>
+            <form id="loginForm">
+                <label for="adminPassword">Yetkili şifresi</label>
+                <input type="password" id="adminPassword" autocomplete="current-password" required>
+                <button class="login-button" type="submit">Panele giriş yap</button>
+                <p id="loginError" class="error" role="alert"></p>
+            </form>
+        </section>
+
+        <section id="adminPanel" class="card page hidden">
+            <div class="admin-header">
+                <div>
+                    <p class="eyebrow">Yönetim</p>
+                    <h1>Gönderilen başvurular</h1>
+                </div>
+                <div class="tools-right">
+                    <button type="button" onclick="verileriYenile()">Yenile</button>
+                    <button class="logout-button" type="button" onclick="cikisYap()">Güvenli çıkış</button>
+                </div>
+            </div>
+            <div class="admin-tools">
+                <div class="folders">
+                    <button id="folderOyuncu" class="folder-button active" type="button" onclick="klasorDegistir('Oyuncu')">Oyuncu (<span id="countOyuncu">0</span>)</button>
+                    <button id="folderMod" class="folder-button" type="button" onclick="klasorDegistir('Moderatör')">Moderatör (<span id="countMod">0</span>)</button>
+                </div>
+            </div>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Discord</th>
+                            <th>Yaş</th>
+                            <th id="dynamicHeading">Karakter adı</th>
+                            <th>Durum</th>
+                            <th>Değerlendirme</th>
+                        </tr>
+                    </thead>
+                    <tbody id="applicationList"></tbody>
+                </table>
+            </div>
+            <p id="connectionNotice" class="notice hidden" role="alert"></p>
+            <p class="notice warning">Bu statik sayfadaki şifre tek başına güvenli erişim sağlamaz. Supabase anon anahtarını kullanarak API çağrıları yapılabilir; özel başvuruları korumak için Supabase Auth ve yetkili kullanıcıya özel RLS politikaları kurun. Service role anahtarını bu dosyaya eklemeyin.</p>
+        </section>
+    </main>
+
+    <script>
+        const SUPABASE_URL = "https://yvmgmhtmlxymaezmhxlh.supabase.co";
+        const SUPABASE_ANON_KEY = "sb_publishable_WbQpgb0yi3tGfqQKyeN4_Q_lam1uyqu";
+        const YETKILI_SIFRESI = "admin123";
+        const supabaseConfigured = /^https?:\/\//.test(SUPABASE_URL) && !SUPABASE_ANON_KEY.includes("BURAYA_");
+        const supabaseClient = supabaseConfigured
+            ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+            : null;
+        let aktifKlasor = "Oyuncu";
+
+        const escapeHtml = (value) => String(value ?? "").replace(/[&<>"']/g, (character) => ({
+            "&": "&amp;",
+            "<": "&lt;",
+            ">": "&gt;",
+            '"': "&quot;",
+            "'": "&#39;"
+        })[character]);
+
+        function girisYap(event) {
+            event.preventDefault();
+            const error = document.getElementById("loginError");
+            if (document.getElementById("adminPassword").value !== YETKILI_SIFRESI) {
+                error.textContent = "Şifre hatalı. Tekrar deneyin.";
+                return;
+            }
+            sessionStorage.setItem("rp_admin", "true");
+            paneliGoster();
+        }
+
+        function paneliGoster() {
+            document.getElementById("loginScreen").classList.add("hidden");
+            document.getElementById("adminPanel").classList.remove("hidden");
+            verileriYenile();
+        }
+
+        function cikisYap() {
+            sessionStorage.removeItem("rp_admin");
+            document.getElementById("adminPanel").classList.add("hidden");
+            document.getElementById("loginScreen").classList.remove("hidden");
+            document.getElementById("adminPassword").value = "";
+        }
+
+        function klasorDegistir(tur) {
+            aktifKlasor = tur;
+            document.getElementById("folderOyuncu").classList.toggle("active", tur === "Oyuncu");
+            document.getElementById("folderMod").classList.toggle("active", tur === "Moderatör");
+            document.getElementById("dynamicHeading").textContent = tur === "Oyuncu" ? "Karakter adı" : "Başvuru alanı";
+            verileriYenile();
+        }
+
+        async function verileriYenile() {
+            const tbody = document.getElementById("applicationList");
+            const notice = document.getElementById("connectionNotice");
+            if (!supabaseConfigured) {
+                notice.textContent = "Supabase bağlantısı henüz ayarlanmamış. SUPABASE_URL ve SUPABASE_ANON_KEY değerlerini bu dosyanın script bölümüne ve başvuru formuna ekleyin.";
+                notice.classList.remove("hidden");
+                tbody.innerHTML = '<tr><td colspan="5">Bağlantı ayarları bekleniyor; başvurular yüklenemiyor.</td></tr>';
+                return;
+            }
+
+            notice.classList.add("hidden");
+            tbody.innerHTML = '<tr><td colspan="5">Başvurular yükleniyor...</td></tr>';
+            try {
+                const { data, error } = await supabaseClient
+                    .from("basvurular")
+                    .select("*")
+                    .order("created_at", { ascending: false });
+                if (error) throw error;
+
+                const applications = data || [];
+                document.getElementById("countOyuncu").textContent = applications.filter((item) => item.form_turu === "Oyuncu").length;
+                document.getElementById("countMod").textContent = applications.filter((item) => item.form_turu === "Moderatör").length;
+                const filtered = applications.filter((item) => item.form_turu === aktifKlasor);
+                if (!filtered.length) {
+                    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center">Bu klasörde henüz başvuru yok.</td></tr>';
+                    return;
+                }
+
+                tbody.innerHTML = filtered.map((item) => {
+                    const status = ["Beklemede", "Onaylandı", "Reddedildi"].includes(item.durum) ? item.durum : "Beklemede";
+                    const options = ["Beklemede", "Onaylandı", "Reddedildi"].map((option) =>
+                        `<option value="${option}" ${status === option ? "selected" : ""}>${option}</option>`
+                    ).join("");
+                    const headingValue = aktifKlasor === "Oyuncu" ? item.karakter_adi : "Moderatörlük";
+                    return `<tr>
+                        <td>${escapeHtml(item.discord_adi)}</td>
+                        <td>${escapeHtml(item.yas)}</td>
+                        <td>${escapeHtml(headingValue)}</td>
+                        <td>${escapeHtml(status)}</td>
+                        <td><select class="status-select" aria-label="Başvuru durumunu değiştir" onchange="durumGuncelle(${Number(item.id)}, this.value)">${options}</select></td>
+                    </tr>
+                    <tr class="details-row"><td colspan="5"><details><summary>Başvuru yanıtlarını görüntüle</summary>${escapeHtml(item.deneyim)}</details></td></tr>`;
+                }).join("");
+            } catch (error) {
+                notice.textContent = "Başvurular yüklenemedi: " + error.message + " Supabase bağlantısını, tabloyu ve RLS izinlerini kontrol edin.";
+                notice.classList.remove("hidden");
+                tbody.innerHTML = '<tr><td colspan="5">Başvurular yüklenemedi. Ayrıntı için uyarıyı kontrol edin.</td></tr>';
+                console.error("Başvurular yüklenirken hata oluştu:", error);
+            }
+        }
+
+        async function durumGuncelle(id, yeniDurum) {
+            if (!id || !["Beklemede", "Onaylandı", "Reddedildi"].includes(yeniDurum)) return;
+            const { error } = await supabaseClient
+                .from("basvurular")
+                .update({ durum: yeniDurum })
+                .eq("id", id);
+            if (error) {
+                alert("Başvuru durumu güncellenemedi: " + error.message);
+                return;
+            }
+            await verileriYenile();
+        }
+
+        document.getElementById("loginForm").addEventListener("submit", girisYap);
+        if (sessionStorage.getItem("rp_admin") === "true") paneliGoster();
+    </script>
+</body>
+</html>

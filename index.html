@@ -3,250 +3,511 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RP Giriş ve Başvuru Yönetim Sistemi</title>
-    <script src="https://yvmgmhtmlxymaezmhxlh.supabase.co/rest/v1/"></script>
+    <title>RP Başvuru Formu</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        :root { --bg: #36393f; --card: #2f3136; --input: #202225; --text: #dcddde; --accent: #5865F2; --border: #23272a; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 20px; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
-        .box { background: var(--card); padding: 30px; border-radius: 8px; width: 100%; max-width: 500px; box-shadow: 0 4px 15px rgba(0,0,0,0.4); box-sizing: border-box; }
-        .wide-box { max-width: 1000px; }
-        h2 { color: #fff; text-align: center; margin-top: 0; margin-bottom: 20px; }
-        label { display: block; margin-bottom: 5px; font-size: 14px; font-weight: bold; }
-        input, button, select, textarea { width: 100%; padding: 12px; margin-bottom: 15px; border-radius: 4px; border: 1px solid var(--border); box-sizing: border-box; background: var(--input); color: #fff; font-size: 14px; }
-        button { background: var(--accent); border: none; font-weight: bold; cursor: pointer; transition: 0.2s; }
-        button:hover { background: #4752C4; }
-        textarea { resize: vertical; height: 80px; }
-        .hidden { display: none !important; }
-        
-        /* Klasör Yapısı Tasarımı */
-        .folder-container { display: flex; gap: 15px; margin-bottom: 20px; }
-        .folder-btn { background: #4f545c; padding: 15px; border-radius: 6px; cursor: pointer; text-align: center; flex: 1; font-weight: bold; border: 2px solid transparent; }
-        .folder-btn.active { background: var(--accent); border-color: #fff; }
+        :root {
+            color-scheme: dark;
+            --bg: #171923;
+            --surface: #202331;
+            --surface-raised: #282c3c;
+            --input: #171a25;
+            --text: #eef0f6;
+            --muted: #a5aabd;
+            --accent: #7885ff;
+            --accent-hover: #6572ec;
+            --border: #383d50;
+            --success: #43b581;
+            --danger: #f04747;
+        }
 
-        /* Tablo ve Kart Yapısı */
-        table { width: 100%; border-collapse: collapse; background: var(--input); margin-top: 10px; border-radius: 6px; overflow: hidden; }
-        th, td { padding: 12px; text-align: left; border-bottom: 1px solid var(--border); }
-        th { background: #18191c; color: white; }
-        .badge { padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: bold; }
-        .Beklemede { background: #faa61a; color: #000; }
-        .Onaylandı { background: #43b581; color: #fff; }
-        .Reddedildi { background: #f04747; color: #fff; }
-        .details-row { background: #2b2c30; font-size: 13px; color: #b9bbbe; }
+        * { box-sizing: border-box; }
+
+        body {
+            min-height: 100vh;
+            margin: 0;
+            padding: 0 20px 48px;
+            background:
+                radial-gradient(ellipse at top, rgba(88, 101, 242, .16), transparent 55%),
+                var(--bg);
+            color: var(--text);
+            font-family: "Segoe UI", Arial, sans-serif;
+        }
+
+        .topbar {
+            width: min(100%, 1040px);
+            margin: 0 auto;
+            padding: 18px 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+        }
+
+        .brand { color: #fff; font-size: 17px; font-weight: 800; }
+        .brand span { color: var(--accent); }
+        .login-area { position: relative; }
+        .login-toggle, button {
+            border: 0;
+            border-radius: 8px;
+            background: var(--accent);
+            color: #fff;
+            font: inherit;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background .18s ease, transform .18s ease;
+        }
+
+        .login-toggle { padding: 10px 16px; }
+        button:hover, .login-toggle:hover { background: var(--accent-hover); }
+        button:active, .login-toggle:active { transform: translateY(1px); }
+        button:disabled { opacity: .65; cursor: wait; }
+
+        .login-popover {
+            position: absolute;
+            z-index: 2;
+            top: calc(100% + 10px);
+            right: 0;
+            width: min(340px, calc(100vw - 40px));
+            padding: 20px;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            background: var(--surface);
+            box-shadow: 0 16px 40px rgba(0, 0, 0, .35);
+        }
+
+        .login-popover h2 { margin: 0 0 6px; font-size: 18px; }
+        .login-popover p { margin: 0 0 14px; color: var(--muted); font-size: 13px; line-height: 1.5; }
+        .page { width: min(100%, 920px); margin: 18px auto 0; }
+        .intro { margin: 0 auto 24px; text-align: center; }
+        .eyebrow { margin: 0 0 8px; color: #aab2ff; font-size: 12px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; }
+        h1 { margin: 0; color: #fff; font-size: clamp(28px, 5vw, 40px); }
+        .intro-copy { max-width: 650px; margin: 12px auto 0; color: var(--muted); line-height: 1.65; }
+
+        .card {
+            padding: clamp(20px, 4vw, 36px);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            background: rgba(32, 35, 49, .96);
+            box-shadow: 0 18px 48px rgba(0, 0, 0, .24);
+        }
+
+        .section + .section { margin-top: 30px; padding-top: 26px; border-top: 1px solid var(--border); }
+        .section-heading { margin: 0 0 5px; color: #fff; font-size: 19px; }
+        .section-copy { margin: 0 0 20px; color: var(--muted); font-size: 13px; line-height: 1.55; }
+        .form-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px 20px; }
+        .field { min-width: 0; }
+        .field.full { grid-column: 1 / -1; }
+
+        label { display: block; margin-bottom: 7px; color: #e8eaf2; font-size: 14px; font-weight: 700; }
+        .optional { color: var(--muted); font-size: 12px; font-weight: 400; }
+        input, select, textarea {
+            width: 100%;
+            padding: 12px 13px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            outline: none;
+            background: var(--input);
+            color: var(--text);
+            font: inherit;
+            font-size: 14px;
+        }
+
+        input:focus, select:focus, textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(120, 133, 255, .16); }
+        textarea { min-height: 112px; resize: vertical; line-height: 1.5; }
+        .hint { margin: 6px 0 0; color: var(--muted); font-size: 12px; line-height: 1.45; }
+        .check-row { display: flex; align-items: flex-start; gap: 10px; color: var(--muted); font-size: 13px; line-height: 1.5; }
+        .check-row input { width: 17px; height: 17px; flex: 0 0 auto; margin: 1px 0 0; accent-color: var(--accent); }
+        .submit-row { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-top: 28px; }
+        .submit-row p { margin: 0; color: var(--muted); font-size: 12px; line-height: 1.5; }
+        .submit-button { width: auto; min-width: 190px; padding: 13px 20px; }
+        .hidden { display: none !important; }
+        .admin-card { width: min(100%, 1120px); margin: 20px auto 0; }
+        .admin-header, .admin-tools { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+        .admin-header { margin-bottom: 22px; }
+        .admin-header h1 { font-size: 25px; }
+        .admin-tools { margin-bottom: 18px; }
+        .folder-container { display: flex; gap: 10px; }
+        .folder-btn { width: auto; padding: 11px 14px; border: 1px solid var(--border); background: var(--surface-raised); }
+        .folder-btn.active { border-color: var(--accent); background: var(--accent); }
+        .refresh-button { width: auto; padding: 11px 14px; background: #368d67; }
+        .table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 10px; }
+        table { width: 100%; border-collapse: collapse; background: var(--input); }
+        th, td { padding: 12px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; }
+        th { background: #191c27; color: #fff; font-size: 13px; }
+        td { font-size: 13px; }
+        .details-row td { color: var(--muted); line-height: 1.55; white-space: pre-wrap; }
+        .badge { display: inline-block; padding: 4px 8px; border-radius: 5px; font-size: 12px; font-weight: 700; }
+        .Beklemede { background: #f0b232; color: #181818; }
+        .Onaylandı { background: #308b61; color: #fff; }
+        .Reddedildi { background: #b93843; color: #fff; }
+        .status-select { min-width: 125px; margin: 0; padding: 8px; }
+        .logout-button { width: auto; padding: 10px 15px; background: #4b5060; }
+        .notice { margin: 16px 0 0; color: var(--muted); font-size: 12px; line-height: 1.5; }
+
+        @media (max-width: 640px) {
+            body { padding: 0 14px 32px; }
+            .topbar { align-items: flex-start; }
+            .brand { padding-top: 9px; font-size: 15px; }
+            .form-grid { grid-template-columns: 1fr; }
+            .field.full { grid-column: auto; }
+            .submit-row, .admin-header, .admin-tools { align-items: stretch; flex-direction: column; }
+            .submit-button { width: 100%; }
+            .folder-container { width: 100%; }
+            .folder-btn { flex: 1; padding: 10px 6px; font-size: 12px; }
+        }
     </style>
 </head>
 <body>
-
-    <!-- 1. DİREKT AÇILAN TEK GİRİŞ EKRANI -->
-    <div id="loginScreen" class="box">
-        <h2>Sunucu Giriş Sistemi</h2>
-        <p style="text-align:center; font-size:13px; color:#b9bbbe; margin-top:-15px;">Oyuncular adını, yetkililer giriş şifresini yazmalıdır.</p>
-        <input type="text" id="loginInput" placeholder="Discord Adınız VEYA Yetkili Şifresi" required>
-        <button onclick="sistemeGiris()">Sisteme Giriş Yap</button>
-    </div>
-
-    <!-- 2. ÜYE BAŞVURU FORMU EKRANI -->
-    <div id="formScreen" class="box">
-        <h2 id="formTitle">Başvuru Formu</h2>
-        <form id="rpForm">
-            <label>Başvuru Yapmak İstediğiniz Departman:</label>
-            <select id="formType" onchange="formAlanlariniGuncelle()">
-                <option value="Oyuncu">Oyuncu Alım Formu</option>
-                <option value="Moderatör">Moderatörlük Başvurusu</option>
-            </select>
-
-            <label>Discord Adınız ve Etiketiniz:</label>
-            <input type="text" id="discordName" readonly>
-
-            <label>Yaşınız:</label>
-            <input type="number" id="age" required>
-
-            <label id="lblCharName">Karakter Adı ve Soyadı (IC):</label>
-            <input type="text" id="charName" required>
-
-            <label id="lblExperience">Roleplay Deneyiminiz veya Neden Siz?</label>
-            <textarea id="experience" required></textarea>
-
-            <button type="button" onclick="basvuruGonder()">Başvuruyu Gönder</button>
-            <button type="button" onclick="cikisYap()" style="background:#4f545c; margin-top:5px;">Çıkış Yap</button>
-        </form>
-    </div>
-
-    <!-- 3. YETKİLİ GİRİŞİ: DOSYA VE KLASÖR YAPILI LİSTELEME PANELİ -->
-    <div id="adminPanelScreen" class="box wide-box hidden">
-        <h2>🛡️ Yetkili Kontrol ve İnceleme Paneli</h2>
-        
-        <!-- Klasör Menüsü -->
-        <div class="folder-container">
-            <div id="folderOyuncu" class="folder-btn active" onclick="klasorDegistir('Oyuncu')">📁 Oyuncu Formları (<span id="countOyuncu">0</span>)</div>
-            <div id="folderMod" class="folder-btn" onclick="klasorDegistir('Moderatör')">📁 Moderatör Formları (<span id="countMod">0</span>)</div>
+    <header class="topbar">
+        <div class="brand">ROLEPLAY <span>BAŞVURU</span></div>
+        <div class="login-area">
+            <button class="login-toggle" id="loginToggle" type="button" aria-expanded="false" aria-controls="loginPopover">Yetkili girişi</button>
+            <form class="login-popover hidden" id="loginPopover">
+                <h2>Yetkili girişi</h2>
+                <p>Başvuruları incelemek için yönetici şifrenizi girin. Başvuru göndermek için giriş yapmanız gerekmez.</p>
+                <label for="adminPassword">Yönetici şifresi</label>
+                <input type="password" id="adminPassword" autocomplete="current-password" placeholder="Şifrenizi girin" required>
+                <button type="submit">Panele giriş yap</button>
+            </form>
         </div>
+    </header>
 
-        <div style="display:flex; justify-content: space-between; align-items: center;">
-            <p>Seçili klasördeki formları ve üyelerin neler yaptığını aşağıdan inceleyebilirsiniz.</p>
-            <button onclick="verileriYenile()" style="width: auto; background: #43b581; margin: 0;">🔄 Canlı Yenile</button>
-        </div>
-        
-        <table>
-            <thead>
-                <tr>
-                    <th>Discord Kullanıcısı</th>
-                    <th>Yaş</th>
-                    <th id="thDinamik">Karakter Adı</th>
-                    <th>Form Durumu</th>
-                    <th>Değerlendirme İşlemi</th>
-                </tr>
-            </thead>
-            <tbody id="basvuruListesi">
-                <!-- Veriler buraya klasör seçimine göre gelecek -->
-            </tbody>
-        </table>
-        <br>
-        <button onclick="cikisYap()" style="background:#4f545c; width: auto; float: right;">Güvenli Çıkış</button>
-    </div>
+    <main>
+        <section id="formScreen" class="page">
+            <div class="intro">
+                <p class="eyebrow">Aramıza katıl</p>
+                <h1>Başvuru Formu</h1>
+                <p class="intro-copy">Sana uygun başvuru türünü seç ve soruları olabildiğince açık yanıtla. Başvurun yetkili ekibimiz tarafından incelendiğinde Discord üzerinden sana ulaşacağız.</p>
+            </div>
 
-<script>
-// --- SUPABASE BAĞLANTISI ---
-const SUPABASE_URL = "BURAYA_SUPABASE_URL_YAPISTIR"; 
-const SUPABASE_ANON_KEY = "BURAYA_SUPABASE_ANON_KEY_YAPISTIR";
-const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            <form id="rpForm" class="card">
+                <section class="section">
+                    <h2 class="section-heading">Başvuru bilgileri</h2>
+                    <p class="section-copy">Önce hangi pozisyon için başvurduğunu ve sana nasıl ulaşabileceğimizi belirt.</p>
+                    <div class="form-grid">
+                        <input type="hidden" id="formType" value="Oyuncu">
+                        <div class="field">
+                            <label for="discordName">Discord kullanıcı adın</label>
+                            <input type="text" id="discordName" maxlength="80" autocomplete="nickname" placeholder="Örnek: kullaniciadi" required>
+                            <p class="hint">Başvuru sonucu için bu hesap üzerinden iletişime geçeceğiz.</p>
+                        </div>
+                        <div class="field">
+                            <label for="age">Yaşın</label>
+                            <input type="number" id="age" min="13" max="99" inputmode="numeric" placeholder="Örnek: 20" required>
+                        </div>
+                        <div class="field" id="charNameField">
+                            <label id="lblCharName" for="charName">Karakter adı ve soyadı (IC)</label>
+                            <input type="text" id="charName" maxlength="100" placeholder="Örnek: Deniz Yılmaz" required>
+                        </div>
+                    </div>
+                </section>
 
-// --- YÖNETİCİ ŞİFRESİ ---
-const YETKILI_SIFRESI = "admin123"; 
+                <section class="section">
+                    <h2 class="section-heading">Deneyim ve motivasyon</h2>
+                    <p class="section-copy">Yanıtlarında kendini ve roleplay yaklaşımını anlat. Kısa ama açıklayıcı cevaplar vermen yeterli.</p>
+                    <div class="form-grid">
+                        <div class="field full">
+                            <label for="experience">Roleplay deneyimin ve bu sunucuya katılma nedenin</label>
+                            <textarea id="experience" maxlength="3000" placeholder="Daha önce oynadığın sunuculardan, sevdiğin rol türlerinden ve burada yapmak istediklerinden bahset." required></textarea>
+                        </div>
+                        <div class="field full">
+                            <label for="strengths">Seni tanımamıza yardımcı olacak başka neler var?</label>
+                            <textarea id="strengths" maxlength="2000" placeholder="Güçlü yönlerin, ilgi alanların veya eklemek istediğin başka bir bilgi..."></textarea>
+                        </div>
+                    </div>
+                </section>
 
-let aktifKlasor = "Oyuncu"; // Varsayılan açık klasör
+                <section class="section">
+                    <h2 class="section-heading">Aktiflik ve topluluk</h2>
+                    <p class="section-copy">Sunucuya ne kadar zaman ayırabileceğini ve topluluk içindeki yaklaşımını paylaş.</p>
+                    <div class="form-grid">
+                        <div class="field">
+                            <label for="availability">Haftada ortalama kaç saat aktifsin?</label>
+                            <select id="availability" required>
+                                <option value="">Bir seçenek belirle</option>
+                                <option value="1-5 saat">1-5 saat</option>
+                                <option value="6-10 saat">6-10 saat</option>
+                                <option value="11-20 saat">11-20 saat</option>
+                                <option value="20 saatten fazla">20 saatten fazla</option>
+                            </select>
+                        </div>
+                        <div class="field">
+                            <label for="playTime">En çok hangi zamanlarda çevrimiçisin?</label>
+                            <input type="text" id="playTime" maxlength="150" placeholder="Örnek: Hafta içi akşamları">
+                        </div>
+                        <div class="field full">
+                            <label for="scenario">Bir anlaşmazlık yaşandığında nasıl çözüm bulursun?</label>
+                            <textarea id="scenario" maxlength="2000" placeholder="Bir oyuncuyla rol içinde veya toplulukta anlaşmazlık yaşarsan nasıl hareket edersin?" required></textarea>
+                        </div>
+                        <div class="field full hidden" id="moderatorFields">
+                            <label for="moderationExperience">Daha önce moderatörlük yaptın mı? Yaptıysan deneyimini anlat.</label>
+                            <textarea id="moderationExperience" maxlength="2000" placeholder="Deneyimin yoksa bu alana moderatörlüğe neden başvurmak istediğini yaz."></textarea>
+                        </div>
+                        <div class="field full hidden" id="moderatorScenarioField">
+                            <label for="moderatorScenario">Bir kural ihlali bildirimi geldiğinde nasıl incelersin?</label>
+                            <textarea id="moderatorScenario" maxlength="2000" placeholder="Tarafsız kalmak ve doğru karar vermek için izleyeceğin adımları anlat."></textarea>
+                        </div>
+                    </div>
+                </section>
 
-// Seçilen forma göre soru başlıklarını değiştirir
-function formAlanlariniGuncelle() {
-    const tur = document.getElementById('formType').value;
-    if(tur === "Moderatör") {
-        document.getElementById('lblCharName').innerText = "Haftalık Kaç Saat Aktif Olabilirsiniz?";
-        document.getElementById('lblExperience').innerText = "Daha önce moderatörlük yaptınız mı? Neden sizi seçmeliyiz?";
-    } else {
-        document.getElementById('lblCharName').innerText = "Karakter Adı ve Soyadı (IC):";
-        document.getElementById('lblExperience').innerText = "Roleplay Deneyiminiz veya Neden Siz?";
-    }
-}
+                <section class="section">
+                    <div class="field">
+                        <label class="check-row" for="confirmRules">
+                            <input type="checkbox" id="confirmRules" required>
+                            <span>Sunucu kurallarını okuyacağımı, topluluk üyelerine saygılı davranacağımı ve verdiğim bilgilerin doğru olduğunu onaylıyorum.</span>
+                        </label>
+                    </div>
+                    <div class="submit-row">
+                        <p>Başvurunu göndermeden önce tüm zorunlu alanları doldurduğundan emin ol.</p>
+                        <button class="submit-button" id="submitButton" type="submit" disabled>Başvuruyu gönder</button>
+                    </div>
+                </section>
+            </form>
+        </section>
 
-// Akıllı Giriş Sistemi
-function sistemeGiris() {
-    const inputVal = document.getElementById('loginInput').value.trim();
-    if(!inputVal) return alert('Lütfen kullanıcı adı veya şifre girin.');
+        <section id="adminPanelScreen" class="card admin-card hidden">
+            <div class="admin-header">
+                <div>
+                    <p class="eyebrow">Yönetim</p>
+                    <h1>Başvuru inceleme paneli</h1>
+                </div>
+                <button class="logout-button" type="button" onclick="cikisYap()">Güvenli çıkış</button>
+            </div>
+            <div class="admin-tools">
+                <div class="folder-container">
+                    <button id="folderOyuncu" class="folder-btn active" type="button" onclick="klasorDegistir('Oyuncu')">Oyuncu (<span id="countOyuncu">0</span>)</button>
+                    <button id="folderMod" class="folder-btn" type="button" onclick="klasorDegistir('Moderatör')">Moderatör (<span id="countMod">0</span>)</button>
+                </div>
+                <button class="refresh-button" type="button" onclick="verileriYenile()">Yenile</button>
+            </div>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Discord</th>
+                            <th>Yaş</th>
+                            <th id="thDinamik">Karakter adı</th>
+                            <th>Durum</th>
+                            <th>Değerlendirme</th>
+                        </tr>
+                    </thead>
+                    <tbody id="basvuruListesi"></tbody>
+                </table>
+            </div>
+            <p id="adminConnectionNotice" class="notice hidden"></p>
+            <p class="notice">Başvuru yanıtlarının tamamını görmek için listedeki başvurunun detayını açın.</p>
+        </section>
+    </main>
 
-    if(inputVal === YETKILI_SIFRESI) {
-        localStorage.setItem('rp_role', 'admin');
-        ekranDegistir('adminPanelScreen');
-        verileriYenile();
-    } else {
-        localStorage.setItem('rp_user', inputVal);
-        ekranDegistir('formScreen');
-        document.getElementById('discordName').value = inputVal;
+    <script>
+        const SUPABASE_URL = "https://yvmgmhtmlxymaezmhxlh.supabase.co";
+        const SUPABASE_ANON_KEY = "sb_publishable_WbQpgb0yi3tGfqQKyeN4_Q_lam1uyqu";
+        const YETKILI_SIFRESI = "admin123";
+        const supabaseConfigured = /^https?:\/\//.test(SUPABASE_URL) && !SUPABASE_ANON_KEY.includes("BURAYA_");
+        const supabaseClient = supabaseConfigured
+            ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+            : null;
+
+        let aktifKlasor = "Oyuncu";
+
+        function gondermeDurumunuGuncelle() {
+            const form = document.getElementById("rpForm");
+            const rulesConfirmed = document.getElementById("confirmRules").checked;
+            document.getElementById("submitButton").disabled = !form.checkValidity() || !rulesConfirmed;
+        }
+
+        const escapeHtml = (value) => String(value ?? "").replace(/[&<>"']/g, (character) => ({
+            "&": "&amp;",
+            "<": "&lt;",
+            ">": "&gt;",
+            '"': "&quot;",
+            "'": "&#39;"
+        })[character]);
+
+        function formAlanlariniGuncelle() {
+            const isModerator = document.getElementById("formType").value === "Moderatör";
+            document.getElementById("charName").required = true;
+            document.getElementById("lblCharName").textContent = isModerator
+                ? "Başvurmak istediğin görev / ilgi alanın"
+                : "Karakter adı ve soyadı (IC)";
+            document.getElementById("charName").placeholder = isModerator
+                ? "Örnek: Oyun moderatörlüğü"
+                : "Örnek: Deniz Yılmaz";
+            document.getElementById("moderatorFields").classList.toggle("hidden", !isModerator);
+            document.getElementById("moderatorScenarioField").classList.toggle("hidden", !isModerator);
+            document.getElementById("moderationExperience").required = isModerator;
+            document.getElementById("moderatorScenario").required = isModerator;
+        }
+
+        function ekranDegistir(id) {
+            document.getElementById("formScreen").classList.toggle("hidden", id !== "formScreen");
+            document.getElementById("adminPanelScreen").classList.toggle("hidden", id !== "adminPanelScreen");
+        }
+
+        function loginPopoverGoster(goster) {
+            document.getElementById("loginPopover").classList.toggle("hidden", !goster);
+            document.getElementById("loginToggle").setAttribute("aria-expanded", String(goster));
+        }
+
+        async function yetkiliGirisi(event) {
+            event.preventDefault();
+            const password = document.getElementById("adminPassword").value;
+            if (password !== YETKILI_SIFRESI) {
+                alert("Yönetici şifresi hatalı.");
+                return;
+            }
+
+            localStorage.setItem("rp_role", "admin");
+            loginPopoverGoster(false);
+            ekranDegistir("adminPanelScreen");
+            await verileriYenile();
+        }
+
+        function cikisYap() {
+            localStorage.removeItem("rp_role");
+            ekranDegistir("formScreen");
+            loginPopoverGoster(false);
+        }
+
+        async function basvuruGonder(event) {
+            event.preventDefault();
+            if (!document.getElementById("rpForm").reportValidity()) return;
+
+            if (!supabaseConfigured) {
+                alert("Başvuruları kaydetmek için dosyadaki Supabase URL ve anon key alanlarını yapılandırın.");
+                return;
+            }
+
+            const isModerator = document.getElementById("formType").value === "Moderatör";
+            const answers = [
+                `Deneyim ve motivasyon:\n${document.getElementById("experience").value.trim()}`,
+                `Ek bilgiler:\n${document.getElementById("strengths").value.trim() || "Belirtilmedi"}`,
+                `Haftalık aktiflik:\n${document.getElementById("availability").value}`,
+                `Çevrimiçi olduğu zamanlar:\n${document.getElementById("playTime").value.trim() || "Belirtilmedi"}`,
+                `Anlaşmazlık yaklaşımı:\n${document.getElementById("scenario").value.trim()}`
+            ];
+
+            if (isModerator) {
+                answers.push(
+                    `Moderatörlük deneyimi ve motivasyonu:\n${document.getElementById("moderationExperience").value.trim()}`,
+                    `Kural ihlali inceleme yaklaşımı:\n${document.getElementById("moderatorScenario").value.trim()}`
+                );
+            }
+
+            const application = {
+                discord_adi: document.getElementById("discordName").value.trim(),
+                yas: Number(document.getElementById("age").value),
+                karakter_adi: document.getElementById("charName").value.trim(),
+                deneyim: answers.join("\n\n"),
+                form_turu: document.getElementById("formType").value
+            };
+
+            const submitButton = document.getElementById("submitButton");
+            submitButton.disabled = true;
+            try {
+                const { error } = await supabaseClient.from("basvurular").insert([application]);
+                if (error) throw error;
+                alert("Başvurun başarıyla gönderildi. İnceleme tamamlandığında sana ulaşacağız.");
+                document.getElementById("rpForm").reset();
+                formAlanlariniGuncelle();
+            } catch (error) {
+                alert("Başvuru gönderilemedi: " + error.message);
+            } finally {
+                gondermeDurumunuGuncelle();
+            }
+        }
+
+        function klasorDegistir(tur) {
+            aktifKlasor = tur;
+            document.getElementById("folderOyuncu").classList.toggle("active", tur === "Oyuncu");
+            document.getElementById("folderMod").classList.toggle("active", tur === "Moderatör");
+            document.getElementById("thDinamik").textContent = tur === "Oyuncu" ? "Karakter adı" : "Aktiflik";
+            verileriYenile();
+        }
+
+        async function verileriYenile() {
+            const tbody = document.getElementById("basvuruListesi");
+            const connectionNotice = document.getElementById("adminConnectionNotice");
+            if (!supabaseConfigured) {
+                connectionNotice.textContent = "Başvuruları görüntülemek için script bölümündeki SUPABASE_URL ve SUPABASE_ANON_KEY değerlerini Supabase projenizin bilgileriyle doldurun. Bu bilgiler ayarlanmadan gönderilen başvurular bu panelden okunamaz.";
+                connectionNotice.classList.remove("hidden");
+                tbody.innerHTML = '<tr><td colspan="5">Supabase bağlantısı yapılandırılmadı; başvurular yüklenemiyor.</td></tr>';
+                return;
+            }
+
+            connectionNotice.classList.add("hidden");
+            tbody.innerHTML = '<tr><td colspan="5">Başvurular yükleniyor...</td></tr>';
+            try {
+                const { data, error } = await supabaseClient
+                    .from("basvurular")
+                    .select("*")
+                    .order("created_at", { ascending: false });
+                if (error) throw error;
+
+                const applications = data || [];
+                document.getElementById("countOyuncu").textContent = applications.filter((item) => item.form_turu === "Oyuncu").length;
+                document.getElementById("countMod").textContent = applications.filter((item) => item.form_turu === "Moderatör").length;
+                const filtered = applications.filter((item) => item.form_turu === aktifKlasor);
+
+                if (filtered.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center">Bu klasörde henüz başvuru yok.</td></tr>';
+                    return;
+                }
+
+                tbody.innerHTML = filtered.map((item) => {
+                    const status = item.durum || "Beklemede";
+                    const fieldValue = aktifKlasor === "Oyuncu" ? item.karakter_adi : "Moderatörlük";
+                    const statusOptions = ["Beklemede", "Onaylandı", "Reddedildi"];
+                    const options = statusOptions.map((option) =>
+                        `<option value="${option}" ${status === option ? "selected" : ""}>${option}</option>`
+                    ).join("");
+                    return `<tr>
+                        <td>${escapeHtml(item.discord_adi)}</td>
+                        <td>${escapeHtml(item.yas)}</td>
+                        <td>${escapeHtml(fieldValue)}</td>
+                        <td><span class="badge ${escapeHtml(status)}">${escapeHtml(status)}</span></td>
+                        <td><select class="status-select" aria-label="Başvuru durumunu değiştir" onchange="durumGuncelle(${Number(item.id)}, this.value)">${options}</select></td>
+                    </tr>
+                    <tr class="details-row"><td colspan="5"><details><summary>Başvuru yanıtlarını görüntüle</summary>${escapeHtml(item.deneyim)}</details></td></tr>`;
+                }).join("");
+            } catch (error) {
+                connectionNotice.textContent = "Başvurular alınamadı: " + error.message + " Supabase bağlantısını, basvurular tablosunu ve tablo izinlerini kontrol edin.";
+                connectionNotice.classList.remove("hidden");
+                tbody.innerHTML = '<tr><td colspan="5">Başvurular yüklenemedi. Ayrıntı için bağlantı uyarısına bakın.</td></tr>';
+                console.error("Başvurular alınırken hata oluştu:", error);
+            }
+        }
+
+        async function durumGuncelle(id, yeniDurum) {
+            if (!id || !["Beklemede", "Onaylandı", "Reddedildi"].includes(yeniDurum)) return;
+            const { error } = await supabaseClient.from("basvurular").update({ durum: yeniDurum }).eq("id", id);
+            if (error) {
+                alert("Başvuru durumu güncellenemedi: " + error.message);
+                return;
+            }
+            await verileriYenile();
+        }
+
+        document.getElementById("rpForm").addEventListener("submit", basvuruGonder);
+        document.getElementById("rpForm").addEventListener("input", gondermeDurumunuGuncelle);
+        document.getElementById("rpForm").addEventListener("change", gondermeDurumunuGuncelle);
+        document.getElementById("loginPopover").addEventListener("submit", yetkiliGirisi);
+        document.getElementById("loginToggle").addEventListener("click", () => {
+            const isExpanded = document.getElementById("loginToggle").getAttribute("aria-expanded") === "true";
+            loginPopoverGoster(!isExpanded);
+        });
+        document.addEventListener("click", (event) => {
+            const loginArea = document.querySelector(".login-area");
+            if (!loginArea.contains(event.target)) loginPopoverGoster(false);
+        });
+
         formAlanlariniGuncelle();
-    }
-}
-
-function ekranDegistir(id) {
-    docum   ent.getElementById('loginScreen').classList.add('hidden');
-    document.getElementById('formScreen').classList.add('hidden');
-    document.getElementById('adminPanelScreen').classList.add('hidden');
-    document.getElementById(id).classList.remove('hidden');
-}
-
-function cikisYap() {
-    localStorage.clear();
-    document.getElementById('loginInput').value = "";
-    ekranDegistir('loginScreen');
-}
-
-// Form Verilerini Gönderme
-async function basvuruGonder() {
-    const tur = document.getElementById('formType').value;
-    const discord = document.getElementById('discordName').value;
-    const yas = document.getElementById('age').value;
-    const karakter = document.getElementById('charName').value;
-    const deneyim = document.getElementById('experience').value;
-
-    if(!yas || !karakter || !deneyim) return alert('Lütfen tüm alanları doldurun.');
-
-    const { error } = await supabase
-        .from('basvurular')
-        .insert([{ discord_adi: discord, yas: yas, karakter_adi: karakter, deneyim: deneyim, form_turu: tur }]);
-
-    if (error) {
-        alert('Hata: ' + error.message);
-    } else {
-        alert('Başvurunuz başarıyla gönderildi! Yetkililer en kısa sürede inceleyecektir.');
-        cikisYap();
-    }
-}
-
-// Klasör Değiştirme Fonksiyonu
-function klasorDegistir(tur) {
-    aktifKlasor = tur;
-    document.getElementById('folderOyuncu').classList.remove('active');
-    document.getElementById('folderMod').classList.remove('active');
-    
-    if(tur === 'Oyuncu') {
-        document.getElementById('folderOyuncu').classList.add('active');
-        document.getElementById('thDinamik').innerText = "Karakter Adı";
-    } else {
-        document.getElementById('folderMod').classList.add('active');
-        document.getElementById('thDinamik').innerText = "Aktiflik Süresi";
-    }
-    verileriYenile();
-}
-
-// Canlı Veri Çekme ve Klasör Sayılarını Hesaplama
-async function verileriYenile() {
-    const { data, error } = await supabase.from('basvurular').select('*').order('created_at', { ascending: false });
-    if(error) return console.error(error);
-
-    // Sayaçları güncelle
-    const oyuncuSayisi = data.filter(i => i.form_turu === 'Oyuncu').length;
-    const modSayisi = data.filter(i => i.form_turu === 'Moderatör').length;
-    document.getElementById('countOyuncu').innerText = oyuncuSayisi;
-    document.getElementById('countMod').innerText = modSayisi;
-
-    const tbody = document.getElementById('basvuruListesi');
-    tbody.innerHTML = "";
-
-    // Sadece aktif klasöre ait verileri filtrele ve listele
-    const filtrelenmişVeri = data.filter(item => item.form_turu === aktifKlasor);
-
-    if(filtrelenmişVeri.length === 0) {
-tbody.innerHTML = <tr><td colspan="5" style="text-align:center;">Bu klasörde henüz doldurulmuş form yok.</td></tr>;
-return;
-}
-filtrelenmişVeri.forEach(item => {
-// Üyenin yazdığı detaylı yanıt satırı (Neler yapmışlar kısmı)
-tbody.innerHTML += `
-${item.discord_adi}
-${item.yas}
-${item.karakter_adi}
-${item.durum}
-💬 Detaylı Başvuru Açıklaması: ${item.deneyim}
-`;
-});
-}
-// Durum Güncelleme
-async function durumGuncelle(id, yeniDurum) {
-if(!yeniDurum) return;
-const { error } = await supabase.from('basvurular').update({ durum: yeniDurum }).eq('id', id);
-if(!error) {
-verileriYenile();
-}
-}
-// Sayfa ilk yüklendiğinde oturum kontrolü
-window.onload = function() {
-if(localStorage.getItem('rp_role') === 'admin') {
-ekranDegistir('adminPanelScreen');
-verileriYenile();
-} else if(localStorage.getItem('rp_user')) {
-ekranDegistir('formScreen');
-document.getElementById('discordName').value = localStorage.getItem('rp_user');
-formAlanlariniGuncelle();
-} else {
-ekranDegistir('loginScreen');
-}
-}
-</script>
+        gondermeDurumunuGuncelle();
+        if (localStorage.getItem("rp_role") === "admin") {
+            ekranDegistir("adminPanelScreen");
+            verileriYenile();
+        }
+    </script>
 </body>
+</html>

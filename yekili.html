@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RP Başvuru Formu</title>
-    <script src="https://yvmgmhtmlxymaezmhxlh.supabase.co/rest/v1/"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         :root {
             color-scheme: dark;
@@ -301,8 +301,8 @@
     </main>
 
     <script>
-        const SUPABASE_URL = "BURAYA_SUPABASE_URL_YAPISTIR";
-        const SUPABASE_ANON_KEY = "BURAYA_SUPABASE_ANON_KEY_YAPISTIR";
+        const SUPABASE_URL = "https://yvmgmhtmlxymaezmhxlh.supabase.co";
+        const SUPABASE_ANON_KEY = "sb_publishable_WbQpgb0yi3tGfqQKyeN4_Q_lam1uyqu";
         const YETKILI_SIFRESI = "admin123";
         const supabaseConfigured = /^https?:\/\//.test(SUPABASE_URL) && !SUPABASE_ANON_KEY.includes("BURAYA_");
         const supabaseClient = supabaseConfigured
