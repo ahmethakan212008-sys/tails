@@ -298,6 +298,7 @@
                     <button id="folderWhitelist" class="folder-btn" type="button" onclick="klasorDegistir('Whitelist')">Whitelist (<span id="countWhitelist">0</span>)</button>
                     <button id="folderMod" class="folder-btn" type="button" onclick="klasorDegistir('Moderatör')">Moderatör (<span id="countMod">0</span>)</button>
                     <button id="folderYetkili" class="folder-btn" type="button" onclick="klasorDegistir('Yetkili')">Yetkili (<span id="countYetkili">0</span>)</button>
+               <button id="folderVerifyed" class="folder-btn" type="button" onclick="klasorDegistir('Verifyed')">Doğrulanmış kullanıcı (<span id="countVerifyed">0</span>)</button>
                 </div>
                 <button class="refresh-button" type="button" onclick="verileriYenile()">Yenile</button>
             </div>
@@ -473,7 +474,7 @@
         function klasorDegistir(tur) {
             aktifKlasor = tur;
             applicationTypes.forEach((type) => {
-                const buttonId = { Oyuncu: "folderOyuncu", Whitelist: "folderWhitelist", Moderatör: "folderMod", Yetkili: "folderYetkili" }[type];
+                const buttonId = { Oyuncu: "folderOyuncu", Whitelist: "folderWhitelist", Moderatör: "folderMod", Yetkili: "folderYetkili", Verifyed: "folderVerifyed" }[type];
                 document.getElementById(buttonId).classList.toggle("active", tur === type);
             });
             document.getElementById("thDinamik").textContent = tur === "Oyuncu" || tur === "Whitelist" ? "Karakter adı" : "Başvuru alanı";
@@ -504,6 +505,7 @@
                 document.getElementById("countWhitelist").textContent = applications.filter((item) => item.form_turu === "Whitelist").length;
                 document.getElementById("countMod").textContent = applications.filter((item) => item.form_turu === "Moderatör").length;
                 document.getElementById("countYetkili").textContent = applications.filter((item) => item.form_turu === "Yetkili").length;
+                document.getElementById("countVerifyed").textContent = applications.filter((item) => item.form_turu === "Verifyed").length;
                 const filtered = applications.filter((item) => item.form_turu === aktifKlasor);
 
                 if (filtered.length === 0) {
