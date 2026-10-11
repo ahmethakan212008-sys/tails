@@ -176,7 +176,7 @@
         const supabaseClient = supabaseConfigured
             ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
             : null;
-        const applicationTypes = ["Oyuncu", "Whitelist", "Moderatör", "Yetkili"];
+        const applicationTypes = ["Oyuncu", "Whitelist", "Moderatör", "Yetkili", "Verifyed"];
         let aktifKlasor = "Oyuncu";
 
         const escapeHtml = (value) => String(value ?? "").replace(/[&<>"']/g, (character) => ({
@@ -214,7 +214,7 @@
         function klasorDegistir(tur) {
             aktifKlasor = tur;
             applicationTypes.forEach((type) => {
-                const buttonId = { Oyuncu: "folderOyuncu", Whitelist: "folderWhitelist", Moderatör: "folderMod", Yetkili: "folderYetkili" }[type];
+                const buttonId = { Oyuncu: "folderOyuncu", Whitelist: "folderWhitelist", Moderatör: "folderMod", Yetkili: "folderYetkili", Verifyed: "folderVerifyed" }[type];
                 document.getElementById(buttonId).classList.toggle("active", tur === type);
             });
             document.getElementById("dynamicHeading").textContent =
