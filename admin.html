@@ -178,6 +178,16 @@
             : null;
         const applicationTypes = ["Oyuncu", "Whitelist", "Moderatör", "Yetkili", "Verifyed"];
         let aktifKlasor = "Oyuncu";
+        let yenilemesurumu = 0;
+        const { data, error } = await
+            supabaseClient
+                .from("başvurular")
+                .select("*")
+                .order("created_at", {	ascending:
+            false });
+
+            if (buSurum !== yenilemeSurumu) return;
+            if (error) throw error;
 
         const escapeHtml = (value) => String(value ?? "").replace(/[&<>"']/g, (character) => ({
             "&": "&amp;",
@@ -201,6 +211,7 @@
         function paneliGoster() {
             document.getElementById("loginScreen").classList.add("hidden");
             document.getElementById("adminPanel").classList.remove("hidden");
+            
             verileriYenile();
         }
 
@@ -225,7 +236,8 @@
         async function verileriYenile() {
             const tbody = document.getElementById("applicationList");
             const notice = document.getElementById("connectionNotice");
-            if (!supabaseConfigured) {
+            const buSurum = ++yenilemesurumu;
+            if (!supabaseConfigured) { 
                 notice.textContent = "Supabase bağlantısı henüz ayarlanmamış. SUPABASE_URL ve SUPABASE_ANON_KEY değerlerini bu dosyanın script bölümüne ve başvuru formuna ekleyin.";
                 notice.classList.remove("hidden");
                 tbody.innerHTML = '<tr><td colspan="5">Bağlantı ayarları bekleniyor; başvurular yüklenemiyor.</td></tr>';
@@ -235,12 +247,15 @@
             notice.classList.add("hidden");
             tbody.innerHTML = '<tr><td colspan="5">Başvurular yükleniyor...</td></tr>';
             try {
-                const { data, error } = await supabaseClient
-                    .from("basvurular")
-                    .select("*")
-                    .order("created_at", { ascending: false });
-                if (error) throw error;
+                const { data, error } = await
+                    supabaseClient
+                        .from("başvurular")
+                        .select("*")
+                        .order("created_at", {	ascending:
+                    false });
 
+                    if (buSurum !== yenilemeSurumu) return;
+                    if (error) throw error;
                 const applications = data || [];
                 document.getElementById("countOyuncu").textContent = applications.filter((item) => item.form_turu === "Oyuncu").length;
                 document.getElementById("countWhitelist").textContent = applications.filter((item) => item.form_turu === "Whitelist").length;
