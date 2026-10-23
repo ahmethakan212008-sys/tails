@@ -506,6 +506,7 @@
                 document.getElementById("countMod").textContent = applications.filter((item) => item.form_turu === "Moderatör").length;
                 document.getElementById("countYetkili").textContent = applications.filter((item) => item.form_turu === "Yetkili").length;
                 document.getElementById("countVerifyed").textContent = applications.filter((item) => item.form_turu === "Verifyed").length;
+                document.getElementById("countSecurity").textContent = applications.filter((item) => item.form_turu === "Security").length;
                 const filtered = applications.filter((item) => item.form_turu === aktifKlasor);
 
                 if (filtered.length === 0) {
