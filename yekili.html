@@ -3,9 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RP Başvuru Formu</title>
+    <title>TurkHaaven Form</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
+    
         :root {
             color-scheme: dark;
             --bg: #171923;
@@ -160,12 +161,12 @@
 </head>
 <body>
     <header class="topbar">
-          <div class="brand">DARK <span>Studio</span></div>
+          <div class="brand">TurkHaaven <span>Form</span></div>
         <div class="login-area">
             <button class="login-toggle" id="loginToggle" type="button" aria-expanded="false" aria-controls="loginPopover">Yetkili girişi</button>
             <form class="login-popover hidden" id="loginPopover">
                 <h2>Yetkili girişi</h2>
-                <p>Başvuruları incelemek için yönetici şifrenizi girin. Başvuru göndermek için giriş yapmanız gerekmez.</p>
+                <p>Başvuruları incelemek için yönetici şifrenizi girin Başvuru göndermek için giriş yapmanız gerekmez</p>
                 <label for="adminPassword">Yönetici şifresi</label>
                 <input type="password" id="adminPassword" autocomplete="current-password" placeholder="Şifrenizi girin" required>
                 <button type="submit">Panele giriş yap</button>
@@ -176,15 +177,15 @@
     <main>
         <section id="formScreen" class="page">
             <div class="intro">
-                <p class="eyebrow">Aramıza katıl</p>
+                <p class="eyebrow">aramıza katıl</p>
                 <h1>Başvuru Formu</h1>
-                <p class="intro-copy">Sana uygun başvuru türünü seç ve soruları olabildiğince açık yanıtla. Başvurun yetkili ekibimiz tarafından incelendiğinde Discord üzerinden sana ulaşacağız.</p>
+                <p class="intro-copy">Sana uygun başvuru türünü seç ve soruları olabildiğince açık yanıtla başvurun yetkili ekibimiz tarafından incelendiğinde Discord üzerinden sana ulaşacağız</p>
             </div>
 
             <form id="rpForm" class="card">
                 <section class="section">
                     <h2 class="section-heading">Başvuru bilgileri</h2>
-                    <p class="section-copy">Önce hangi pozisyon için başvurduğunu ve sana nasıl ulaşabileceğimizi belirt.</p>
+                    <p class="section-copy">Önce hangi pozisyon için başvurduğunu ve sana nasıl ulaşabileceğimizi belirt</p>
                     <div class="form-grid">
                         <input type="hidden" id="formType" value="Oyuncu">
                         <div class="field full">
@@ -195,19 +196,19 @@
                                 <option value="Moderatör">Moderatör başvurusu</option>
                                 <option value="Yetkili">Yetkili başvurusu</option>
                             </select>
-                            <p class="hint">Başvurun seçtiğin türe göre yetkili panelinde ilgili bölümde listelenir.</p>
+                            <p class="hint">Başvurun seçtiğin türe göre yetkili panelinde ilgili bölümde listelenir</p>
                         </div>
                         <div class="field">
                             <label for="discordName">Discord kullanıcı adın</label>
                             <input type="text" id="discordName" maxlength="80" autocomplete="nickname" placeholder="Örnek: kullaniciadi" required>
-                            <p class="hint">Başvuru sonucu için bu hesap üzerinden iletişime geçeceğiz.</p>
+                            <p class="hint">Başvuru sonucu için bu hesap üzerinden iletişime geçeceğiz</p>
                         </div>
                         <div class="field">
                             <label for="age">Yaşın</label>
                             <input type="number" id="age" min="13" max="99" inputmode="numeric" placeholder="Örnek: 20" required>
                         </div>
                         <div class="field" id="charNameField">
-                            <label id="lblCharName" for="charName">Karakter adı ve soyadı (IC)</label>
+                            <label id="lblCharName" for="charName">Karakter adı ve soyadı</label>
                             <input type="text" id="charName" maxlength="100" placeholder="Örnek: Deniz Yılmaz" required>
                         </div>
                     </div>
@@ -215,7 +216,7 @@
 
                 <section class="section">
                     <h2 class="section-heading">Deneyim ve motivasyon</h2>
-                    <p class="section-copy">Yanıtlarında kendini ve roleplay yaklaşımını anlat. Kısa ama açıklayıcı cevaplar vermen yeterli.</p>
+                    <p class="section-copy">Yanıtlarında kendini ve roleplay yaklaşımını anlat kısa ama açıklayıcı cevaplar vermen yeterli</p>
                     <div class="form-grid">
                         <div class="field full">
                             <label for="experience">Roleplay deneyimin ve bu sunucuya katılma nedenin</label>
@@ -230,12 +231,12 @@
 
                 <section class="section">
                     <h2 class="section-heading">Aktiflik ve topluluk</h2>
-                    <p class="section-copy">Sunucuya ne kadar zaman ayırabileceğini ve topluluk içindeki yaklaşımını paylaş.</p>
+                    <p class="section-copy">Sunucuya ne kadar zaman ayırabileceğini ve topluluk içindeki yaklaşımını paylaş</p>
                     <div class="form-grid">
                         <div class="field">
                             <label for="availability">Haftada ortalama kaç saat aktifsin?</label>
                             <select id="availability" required>
-                                <option value="">Bir seçenek belirle</option>
+                                <option value="">Bir seçenek belirlemene lazım</option>
                                 <option value="1-5 saat">1-5 saat</option>
                                 <option value="6-10 saat">6-10 saat</option>
                                 <option value="11-20 saat">11-20 saat</option>
@@ -251,7 +252,7 @@
                             <textarea id="scenario" maxlength="2000" placeholder="Bir oyuncuyla rol içinde veya toplulukta anlaşmazlık yaşarsan nasıl hareket edersin?" required></textarea>
                         </div>
                         <div class="field full hidden" id="moderatorFields">
-                            <label for="moderationExperience">Daha önce moderatörlük yaptın mı? Yaptıysan deneyimini anlat.</label>
+                            <label for="moderationExperience">Daha önce moderatörlük yaptın mı? yaptıysan deneyimini anlat</label>
                             <textarea id="moderationExperience" maxlength="2000" placeholder="Deneyimin yoksa bu alana moderatörlüğe neden başvurmak istediğini yaz."></textarea>
                         </div>
                         <div class="field full hidden" id="moderatorScenarioField">
@@ -273,11 +274,11 @@
                     <div class="field">
                         <label class="check-row" for="confirmRules">
                             <input type="checkbox" id="confirmRules" required>
-                            <span>Sunucu kurallarını okuyacağımı, topluluk üyelerine saygılı davranacağımı ve verdiğim bilgilerin doğru olduğunu onaylıyorum.</span>
+                            <span>Sunucu kurallarını okuyacağımı topluluk üyelerine saygılı davranacağımı ve verdiğim bilgilerin doğru olduğunu onaylıyorum</span>
                         </label>
                     </div>
                     <div class="submit-row">
-                        <p>Başvurunu göndermeden önce tüm zorunlu alanları doldurduğundan emin ol.</p>
+                        <p>Başvurunu göndermeden önce tüm zorunlu alanları doldurduğundan emin ol</p>
                         <button class="submit-button" id="submitButton" type="submit" disabled>Başvuruyu gönder</button>
                     </div>
                 </section>
@@ -317,7 +318,7 @@
                 </table>
             </div>
             <p id="adminConnectionNotice" class="notice hidden"></p>
-            <p class="notice">Başvuru yanıtlarının tamamını görmek için listedeki başvurunun detayını açın.</p>
+            <p class="notice">Başvuru yanıtlarının tamamını görmek için listedeki başvurunun detayını açın</p>
         </section>
     </main>
 
@@ -510,7 +511,7 @@
                 const filtered = applications.filter((item) => item.form_turu === aktifKlasor);
 
                 if (filtered.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center">Bu klasörde henüz başvuru yok.</td></tr>';
+                    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center">Bu klasörde henüz başvuru yok</td></tr>';
                     return;
                 }
 
