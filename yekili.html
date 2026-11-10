@@ -43,6 +43,10 @@
                                 <option value="Whitelist">Whitelist başvurusu</option>
                                 <option value="Moderatör">Moderatör başvurusu</option>
                                 <option value="Yetkili">Yetkili başvurusu</option>
+                                <option value="Verifyed">Doğrulanmış kullanıcı başvurusu</option>
+                                <option value="Security">Güvenlik başvurusu</option>
+                                <option value="Terorist">Terorist başvurusu</option>
+                                <option value="Obur üye">Obur üye başvurusu</option>
                             </select>
                             <p class="hint">Başvurun seçtiğin türe göre yetkili panelinde ilgili bölümde listelenir</p>
                         </div>
@@ -148,6 +152,9 @@
                     <button id="folderMod" class="folder-btn" type="button" onclick="klasorDegistir('Moderatör')">Moderatör (<span id="countMod">0</span>)</button>
                     <button id="folderYetkili" class="folder-btn" type="button" onclick="klasorDegistir('Yetkili')">Yetkili (<span id="countYetkili">0</span>)</button>
                <button id="folderVerifyed" class="folder-btn" type="button" onclick="klasorDegistir('Verifyed')">Doğrulanmış kullanıcı (<span id="countVerifyed">0</span>)</button>
+                    <button id="folderSecurity" class="folder-btn" type="button" onclick="klasorDegistir('Security')">Güvenlik (<span id="countSecurity">0</span>)</button>
+                    <button id="folderTerorist" class="folder-btn" type="button" onclick="klasorDegistir('Terorist')">Terorist (<span id="countTerorist">0</span>)</button>
+                    <button id="folderObur" class="folder-btn" type="button" onclick="klasorDegistir('Obur üye')">Obur üye (<span id="countObur">0</span>)</button>
                 </div>
                 <button class="refresh-button" type="button" onclick="verileriYenile()">Yenile</button>
             </div>

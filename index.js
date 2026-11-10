@@ -6,7 +6,7 @@ const SUPABASE_URL = "https://yvmgmhtmlxymaezmhxlh.supabase.co";
             ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
             : null;
 
-        const applicationTypes = ["Oyuncu", "Whitelist", "Moderatör", "Yetkili", "Verifyed", "Security"];
+        const applicationTypes = ["Oyuncu", "Whitelist", "Moderatör", "Yetkili", "Verifyed", "Security, Terorist", "Obur üye"];
         let aktifKlasor = "Oyuncu";
 
         function gondermeDurumunuGuncelle() {
@@ -40,11 +40,11 @@ const SUPABASE_URL = "https://yvmgmhtmlxymaezmhxlh.supabase.co";
             document.getElementById("moderationExperience").required = isStaff;
             document.getElementById("moderatorScenario").required = isStaff;
             document.getElementById("moderationExperience").previousElementSibling.textContent = type === "Yetkili"
-                ? "Daha önce yetkili veya ekip üyesi olarak çalıştın mı? Deneyimini anlat."
-                : "Daha önce moderatörlük yaptın mı? Yaptıysan deneyimini anlat.";
+                ? "Daha önce yetkili veya ekip üyesi olarak çalıştın mı? Deneyimini anlat"
+                : "Daha önce moderatörlük yaptın mı? yaptıysan deneyimini anlat.";
             document.getElementById("moderationExperience").placeholder = type === "Yetkili"
-                ? "Deneyimin yoksa yetkili ekibine neden katılmak istediğini yaz."
-                : "Deneyimin yoksa moderatörlüğe neden başvurmak istediğini yaz.";
+                ? "Deneyimin yoksa yetkili ekibine neden katılmak istediğini yaz"
+                : "Deneyimin yoksa moderatörlüğe neden başvurmak istediğini yaz";
             document.getElementById("moderatorScenarioField").querySelector("label").textContent = type === "Yetkili"
                 ? "Bir ekip üyesiyle anlaşmazlık yaşarsan nasıl çözersin?"
                 : "Bir kural ihlali bildirimi geldiğinde nasıl incelersin?";
@@ -52,8 +52,8 @@ const SUPABASE_URL = "https://yvmgmhtmlxymaezmhxlh.supabase.co";
                 ? "Deneyimin ve bu görev için başvurma nedenin"
                 : "Roleplay deneyimin ve bu sunucuya katılma nedenin";
             document.getElementById("experience").placeholder = isStaff
-                ? "İlgili deneyiminden, güçlü yönlerinden ve ekibe nasıl katkı sağlayacağından bahset."
-                : "Daha önce oynadığın sunuculardan, sevdiğin rol türlerinden ve burada yapmak istediklerinden bahset.";
+                ? "İlgili deneyiminden güçlü yönlerinden ve ekibe nasıl katkı sağlayacağından bahset"
+                : "Daha önce oynadığın sunuculardan sevdiğin rol türlerinden ve burada yapmak istediklerinden bahset";
             document.getElementById("whitelistFields").classList.toggle("hidden", !isWhitelist);
             document.getElementById("whitelistGoalsField").classList.toggle("hidden", !isWhitelist);
             document.getElementById("characterStory").required = isWhitelist;
@@ -150,7 +150,7 @@ const SUPABASE_URL = "https://yvmgmhtmlxymaezmhxlh.supabase.co";
         function klasorDegistir(tur) {
             aktifKlasor = tur;
             applicationTypes.forEach((type) => {
-                const buttonId = { Oyuncu: "folderOyuncu", Whitelist: "folderWhitelist", Moderatör: "folderMod", Yetkili: "folderYetkili", Verifyed: "folderVerifyed" , Security: "folderSecurity" }[type];
+                const buttonId = { Oyuncu: "folderOyuncu", Whitelist: "folderWhitelist", Moderatör: "folderMod", Yetkili: "folderYetkili", Verifyed: "folderVerifyed" , Security: "folderSecurity", Terorist: "folderTerorist", Obur: "folderObur" }[type];
                 document.getElementById(buttonId).classList.toggle("active", tur === type);
             });
             document.getElementById("thDinamik").textContent = tur === "Oyuncu" || tur === "Whitelist" ? "Karakter adı" : "Başvuru alanı";
@@ -183,6 +183,8 @@ const SUPABASE_URL = "https://yvmgmhtmlxymaezmhxlh.supabase.co";
                 document.getElementById("countYetkili").textContent = applications.filter((item) => item.form_turu === "Yetkili").length;
                 document.getElementById("countVerifyed").textContent = applications.filter((item) => item.form_turu === "Verifyed").length;
                 document.getElementById("countSecurity").textContent = applications.filter((item) => item.form_turu === "Security").length;
+                document.getElementById("countTerorist").textContent = applications.filter((item) => item.form_turu === "Terorist").length;
+                document.getElementById("countObur").textContent = applications.filter((item) => item.form_turu === "Obur üye").length;
                 const filtered = applications.filter((item) => item.form_turu === aktifKlasor);
 
                 if (filtered.length === 0) {

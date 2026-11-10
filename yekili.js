@@ -6,7 +6,7 @@ const SUPABASE_URL = "https://yvmgmhtmlxymaezmhxlh.supabase.co";
             ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
             : null;
 
-        const applicationTypes = ["Oyuncu", "Whitelist", "Moderatör", "Yetkili", "Verifyed"];
+        const applicationTypes = ["Oyuncu", "Whitelist", "Moderatör", "Yetkili", "Verifyed", "Security", "Terorist", "Obur üye"];
         let aktifKlasor = "Oyuncu";
 
         function gondermeDurumunuGuncelle() {
@@ -183,6 +183,8 @@ const SUPABASE_URL = "https://yvmgmhtmlxymaezmhxlh.supabase.co";
                 document.getElementById("countYetkili").textContent = applications.filter((item) => item.form_turu === "Yetkili").length;
                 document.getElementById("countVerifyed").textContent = applications.filter((item) => item.form_turu === "Verifyed").length;
                 document.getElementById("countSecurity").textContent = applications.filter((item) => item.form_turu === "Security").length;
+                document.getElementById("countTerorist").textContent = applications.filter((item) => item.form_turu === "Terorist").length;
+                document.getElementById("countObur").textContent = applications.filter((item) => item.form_turu === "Obur üye").length;
                 const filtered = applications.filter((item) => item.form_turu === aktifKlasor);
 
                 if (filtered.length === 0) {

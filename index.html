@@ -1,178 +1,183 @@
-<!DOCTYPE html>
-<html lang="tr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RP Başvuru Formu</title>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-        <link rel="stylesheet" href="index.css">
-</head>
-<body>
-    <header class="topbar">
-        <div class="brand">TurkHaaven <span>Form</span></div>
-        <div class="login-area">
-            <button class="login-toggle" id="loginToggle" type="button" aria-expanded="false" aria-controls="loginPopover">Yetkili girişi</button>
-            <form class="login-popover hidden" id="loginPopover">
-                <h2>Yetkili girişi</h2>
-                <p>Başvuruları incelemek için yönetici şifrenizi girin. Başvuru göndermek için giriş yapmanız gerekmez</p>
-                <label for="adminPassword">Yönetici şifresi</label>
-                <input type="password" id="adminPassword" autocomplete="current-password" placeholder="Şifrenizi girin" required>
-                <button type="submit">Panele giriş yap</button>
-            </form>
-        </div>
-    </header>
-
-    <main>
-        <section id="formScreen" class="page">
-            <div class="intro">
-                <p class="eyebrow">Aramıza katıl</p>
-                <h1>Başvuru Formu</h1>
-                <p class="intro-copy">Sana uygun başvuru türünü seç ve soruları olabildiğince açık yanıtla bilgilerini doğru yazdığından emin ol başvurun yetkili ekibimiz tarafından incelendiğinde Discord üzerinden sana ulaşacağız</p>
+    <!DOCTYPE html>
+    <html lang="tr">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>RP Başvuru Formu</title>
+        <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+            <link rel="stylesheet" href="index.css">
+    </head>
+    <body>
+        <header class="topbar">
+            <div class="brand">TurkHaaven <span>Form</span></div>
+            <div class="login-area">
+                <button class="login-toggle" id="loginToggle" type="button" aria-expanded="false" aria-controls="loginPopover">Yetkili girişi</button>
+                <form class="login-popover hidden" id="loginPopover">
+                    <h2>Yetkili girişi</h2>
+                    <p>Başvuruları incelemek için yönetici şifrenizi girin. Başvuru göndermek için giriş yapmanız gerekmez</p>
+                    <label for="adminPassword">Yönetici şifresi</label>
+                    <input type="password" id="adminPassword" autocomplete="current-password" placeholder="Şifrenizi girin" required>
+                    <button type="submit">Panele giriş yap</button>
+                </form>
             </div>
+        </header>
 
-            <form id="rpForm" class="card">
-                <section class="section">
-                    <h2 class="section-heading">Başvuru bilgileri</h2>
-                    <p class="section-copy">Önce hangi pozisyon için başvurduğunu ve sana nasıl ulaşabileceğimizi belirt</p>
-                    <div class="form-grid">
-                        <input type="hidden" id="formType" value="Oyuncu">
-                        <div class="field full">
-                            <label for="registrationType">Kayıt türü</label>
-                            <select id="registrationType" required>
-                                <option value="Oyuncu">Oyuncu kaydı</option>
-                                <option value="Whitelist">Whitelist başvurusu</option>
-                                <option value="Moderatör">Moderatör başvurusu</option>
-                                <option value="Yetkili">Yetkili başvurusu</option>
-                                <option value="Verifyed">Doğrulanmış kullanıcı</option>
-                                <option value="Security">Güvenlik başvurusu</option>
-                            </select>
-                            <p class="hint">Başvurun seçtiğin türe göre yetkili panelinde ilgili bölümde listelenir</p>
-                        </div>
-                        <div class="field">
-                            <label for="discordName">Discord kullanıcı adın</label>
-                            <input type="text" id="discordName" maxlength="80" autocomplete="nickname" placeholder="Örnek: kullaniciadi" required>
-                            <p class="hint">Başvuru sonucu için bu hesap üzerinden iletişime geçeceğiz</p>
-                        </div>
-                        <div class="field">
-                            <label for="age">Yaşın</label>
-                            <input type="number" id="age" min="13" max="99" inputmode="numeric" placeholder="Örnek: 20" required>
-                        </div>
-                        <div class="field" id="charNameField">
-                            <label id="lblCharName" for="charName">Karakter adı ve soyadı</label>
-                            <input type="text" id="charName" maxlength="100" placeholder="Örnek: Deniz Yılmaz" required>
-                        </div>
-                    </div>
-                </section>
-
-                <section class="section">
-                    <h2 class="section-heading">Deneyim ve motivasyon</h2>
-                    <p class="section-copy">Yanıtlarında kendini ve roleplay yaklaşımını anlat Kısa ama açıklayıcı cevaplar vermen yeterli</p>
-                    <div class="form-grid">
-                        <div class="field full">
-                            <label for="experience">Roleplay deneyimin ve bu sunucuya katılma nedenin</label>
-                            <textarea id="experience" maxlength="3000" placeholder="Daha önce oynadığın sunuculardan, sevdiğin rol türlerinden ve burada yapmak istediklerinden bahset." required></textarea>
-                        </div>
-                        <div class="field full">
-                            <label for="strengths">Seni tanımamıza yardımcı olacak başka neler var?</label>
-                            <textarea id="strengths" maxlength="2000" placeholder="Güçlü yönlerin, ilgi alanların veya eklemek istediğin başka bir bilgi..."></textarea>
-                        </div>
-                    </div>
-                </section>
-
-                <section class="section">
-                    <h2 class="section-heading">Aktiflik ve topluluk</h2>
-                    <p class="section-copy">Sunucuya ne kadar zaman ayırabileceğini ve topluluk içindeki yaklaşımını paylaş</p>
-                    <div class="form-grid">
-                        <div class="field">
-                            <label for="availability">Haftada ortalama kaç saat aktifsin?</label>
-                            <select id="availability" required>
-                                <option value="">Bir seçenek belirle</option>
-                                <option value="1-5 saat">1-5 saat</option>
-                                <option value="6-10 saat">6-10 saat</option>
-                                <option value="11-20 saat">11-20 saat</option>
-                                <option value="20 saatten fazla">20 saatten fazla</option>
-                            </select>
-                        </div>
-                        <div class="field">
-                            <label for="playTime">En çok hangi zamanlarda çevrimiçisin?</label>
-                            <input type="text" id="playTime" maxlength="150" placeholder="Örnek: Hafta içi akşamları">
-                        </div>
-                        <div class="field full">
-                            <label for="scenario">Bir anlaşmazlık yaşandığında nasıl çözüm bulursun?</label>
-                            <textarea id="scenario" maxlength="2000" placeholder="Bir oyuncuyla rol içinde veya toplulukta anlaşmazlık yaşarsan nasıl hareket edersin?" required></textarea>
-                        </div>
-                        <div class="field full hidden" id="moderatorFields">
-                            <label for="moderationExperience">Daha önce moderatörlük yaptın mı? yaptıysan deneyimini anlat</label>
-                            <textarea id="moderationExperience" maxlength="2000" placeholder="Deneyimin yoksa bu alana moderatörlüğe neden başvurmak istediğini yaz."></textarea>
-                        </div>
-                        <div class="field full hidden" id="moderatorScenarioField">
-                            <label for="moderatorScenario">Bir kural ihlali bildirimi geldiğinde nasıl incelersin?</label>
-                            <textarea id="moderatorScenario" maxlength="2000" placeholder="Tarafsız kalmak ve doğru karar vermek için izleyeceğin adımları anlat."></textarea>
-                        </div>
-                        <div class="field full hidden" id="whitelistFields">
-                            <label for="characterStory">Karakterinin geçmişi nedir?</label>
-                            <textarea id="characterStory" maxlength="3000" placeholder="Karakterinin nereden geldiğini, geçmişini ve onu şekillendiren olayları anlat"></textarea>
-                        </div>
-                        <div class="field full hidden" id="whitelistGoalsField">
-                            <label for="characterGoals">Karakterin şehirde neler yapmak istiyor?</label>
-                            <textarea id="characterGoals" maxlength="2000" placeholder="Karakterinin hedeflerini ve kurmayı düşündüğün rol hikâyesini anlat"></textarea>
-                        </div>
-                    </div>
-                </section>
-
-                <section class="section">
-                    <div class="field">
-                        <label class="check-row" for="confirmRules">
-                            <input type="checkbox" id="confirmRules" required>
-                            <span>Sunucu kurallarını okuyacağımı topluluk üyelerine saygılı davranacağımı ve verdiğim bilgilerin doğru olduğunu onaylıyorum</span>
-                        </label>
-                    </div>
-                    <div class="submit-row">
-                        <p>Başvurunu göndermeden önce tüm zorunlu alanları doldurduğundan ve doğru doldurduğundan emin ol </p>
-                        <button class="submit-button" id="submitButton" type="submit" disabled>Başvuruyu gönder</button>
-                    </div>
-                </section>
-            </form>
-        </section>
-
-        <section id="adminPanelScreen" class="card admin-card hidden">
-            <div class="admin-header">
-                <div>
-                    <p class="eyebrow">Yönetim</p>
-                    <h1>Başvuru inceleme paneli</h1>
+        <main>
+            <section id="formScreen" class="page">
+                <div class="intro">
+                    <p class="eyebrow">Aramıza katıl</p>
+                    <h1>Başvuru Formu</h1>
+                    <p class="intro-copy">Sana uygun başvuru türünü seç ve soruları olabildiğince açık yanıtla bilgilerini doğru yazdığından emin ol başvurun yetkili ekibimiz tarafından incelendiğinde Discord üzerinden sana ulaşacağız</p>
                 </div>
-                <button class="logout-button" type="button" onclick="cikisYap()">Güvenli çıkış</button>
-            </div>
-            <div class="admin-tools">
-                <div class="folder-container">
-                    <button id="folderOyuncu" class="folder-btn active" type="button" onclick="klasorDegistir('Oyuncu')">Oyuncu (<span id="countOyuncu">0</span>)</button>
-                    <button id="folderWhitelist" class="folder-btn" type="button" onclick="klasorDegistir('Whitelist')">Whitelist (<span id="countWhitelist">0</span>)</button>
-                    <button id="folderMod" class="folder-btn" type="button" onclick="klasorDegistir('Moderatör')">Moderatör (<span id="countMod">0</span>)</button>
-                    <button id="folderYetkili" class="folder-btn" type="button" onclick="klasorDegistir('Yetkili')">Yetkili (<span id="countYetkili">0</span>)</button>
-                    <button id="folderVerifyed" class="folder-btn" type="button" onclick="klasorDegistir('Verifyed')">Doğrulanmış kullanıcı (<span id="countVerifyed">0</span>)</button>
-                    <button id="folderSecurity" class="folder-btn" type="button" onclick="klasorDegistir('Security')">Güvenlik (<span id="countSecurity">0</span>)</button>
-                </div>
-                <button class="refresh-button" type="button" onclick="verileriYenile()">Yenile</button>
-            </div>
-            <div class="table-wrap">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Discord</th>
-                            <th>Yaş</th>
-                            <th id="thDinamik">Karakter adı</th>
-                            <th>Durum</th>
-                            <th>Değerlendirme</th>
-                        </tr>
-                    </thead>
-                    <tbody id="basvuruListesi"></tbody>
-                </table>
-            </div>
-            <p id="adminConnectionNotice" class="notice hidden"></p>
-            <p class="notice">Başvuru yanıtlarının tamamını görmek için listedeki başvurunun detayını açın</p>
-        </section>
-    </main>
 
-        <script src="index.js"></script>
-</body>
-</html>
+                <form id="rpForm" class="card">
+                    <section class="section">
+                        <h2 class="section-heading">Başvuru bilgileri</h2>
+                        <p class="section-copy">Önce hangi pozisyon için başvurduğunu ve sana nasıl ulaşabileceğimizi belirt</p>
+                        <div class="form-grid">
+                            <input type="hidden" id="formType" value="Oyuncu">
+                            <div class="field full">
+                                <label for="registrationType">Kayıt türü</label>
+                                <select id="registrationType" required>
+                                    <option value="Oyuncu">Oyuncu kaydı</option>
+                                    <option value="Whitelist">Whitelist başvurusu</option>
+                                    <option value="Moderatör">Moderatör başvurusu</option>
+                                    <option value="Yetkili">Yetkili başvurusu</option>
+                                    <option value="Verifyed">Doğrulanmış kullanıcı</option>
+                                    <option value="Security">Güvenlik başvurusu</option>
+                                    <option value="Atkif üye">Aktif üye</option>
+                                    <option value="Terorist">Terorist</option>
+                                    <option value="Obur üye">Obur üye</option>
+                                </select>
+                                <p class="hint">Başvurun seçtiğin türe göre yetkili panelinde ilgili bölümde listelenir</p>
+                            </div>
+                            <div class="field">
+                                <label for="discordName">Discord kullanıcı adın</label>
+                                <input type="text" id="discordName" maxlength="80" autocomplete="nickname" placeholder="Örnek: kullaniciadi" required>
+                                <p class="hint">Başvuru sonucu için bu hesap üzerinden iletişime geçeceğiz</p>
+                            </div>
+                            <div class="field">
+                                <label for="age">Yaşın</label>
+                                <input type="number" id="age" min="13" max="99" inputmode="numeric" placeholder="Örnek: 20" required>
+                            </div>
+                            <div class="field" id="charNameField">
+                                <label id="lblCharName" for="charName">Karakter adı ve soyadı</label>
+                                <input type="text" id="charName" maxlength="100" placeholder="Örnek: Deniz Yılmaz" required>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="section">
+                        <h2 class="section-heading">Deneyim ve motivasyon</h2>
+                        <p class="section-copy">Yanıtlarında kendini ve roleplay yaklaşımını anlat Kısa ama açıklayıcı cevaplar vermen yeterli</p>
+                        <div class="form-grid">
+                            <div class="field full">
+                                <label for="experience">Roleplay deneyimin ve bu sunucuya katılma nedenin</label>
+                                <textarea id="experience" maxlength="3000" placeholder="Daha önce oynadığın sunuculardan, sevdiğin rol türlerinden ve burada yapmak istediklerinden bahset." required></textarea>
+                            </div>
+                            <div class="field full">
+                                <label for="strengths">Seni tanımamıza yardımcı olacak başka neler var?</label>
+                                <textarea id="strengths" maxlength="2000" placeholder="Güçlü yönlerin, ilgi alanların veya eklemek istediğin başka bir bilgi..."></textarea>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="section">
+                        <h2 class="section-heading">Aktiflik ve topluluk</h2>
+                        <p class="section-copy">Sunucuya ne kadar zaman ayırabileceğini ve topluluk içindeki yaklaşımını paylaş</p>
+                        <div class="form-grid">
+                            <div class="field">
+                                <label for="availability">Haftada ortalama kaç saat aktifsin?</label>
+                                <select id="availability" required>
+                                    <option value="">Bir seçenek belirle</option>
+                                    <option value="1-5 saat">1-5 saat</option>
+                                    <option value="6-10 saat">6-10 saat</option>
+                                    <option value="11-20 saat">11-20 saat</option>
+                                    <option value="20 saatten fazla">20 saatten fazla</option>
+                                </select>
+                            </div>
+                            <div class="field">
+                                <label for="playTime">En çok hangi zamanlarda çevrimiçisin?</label>
+                                <input type="text" id="playTime" maxlength="150" placeholder="Örnek: Hafta içi akşamları">
+                            </div>
+                            <div class="field full">
+                                <label for="scenario">Bir anlaşmazlık yaşandığında nasıl çözüm bulursun?</label>
+                                <textarea id="scenario" maxlength="2000" placeholder="Bir oyuncuyla rol içinde veya toplulukta anlaşmazlık yaşarsan nasıl hareket edersin?" required></textarea>
+                            </div>
+                            <div class="field full hidden" id="moderatorFields">
+                                <label for="moderationExperience">Daha önce moderatörlük yaptın mı? yaptıysan deneyimini anlat</label>
+                                <textarea id="moderationExperience" maxlength="2000" placeholder="Deneyimin yoksa bu alana moderatörlüğe neden başvurmak istediğini yaz."></textarea>
+                            </div>
+                            <div class="field full hidden" id="moderatorScenarioField">
+                                <label for="moderatorScenario">Bir kural ihlali bildirimi geldiğinde nasıl incelersin?</label>
+                                <textarea id="moderatorScenario" maxlength="2000" placeholder="Tarafsız kalmak ve doğru karar vermek için izleyeceğin adımları anlat."></textarea>
+                            </div>
+                            <div class="field full hidden" id="whitelistFields">
+                                <label for="characterStory">Karakterinin geçmişi nedir?</label>
+                                <textarea id="characterStory" maxlength="3000" placeholder="Karakterinin nereden geldiğini, geçmişini ve onu şekillendiren olayları anlat"></textarea>
+                            </div>
+                            <div class="field full hidden" id="whitelistGoalsField">
+                                <label for="characterGoals">Karakterin şehirde neler yapmak istiyor?</label>
+                                <textarea id="characterGoals" maxlength="2000" placeholder="Karakterinin hedeflerini ve kurmayı düşündüğün rol hikâyesini anlat"></textarea>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="section">
+                        <div class="field">
+                            <label class="check-row" for="confirmRules">
+                                <input type="checkbox" id="confirmRules" required>
+                                <span>Sunucu kurallarını okuyacağımı topluluk üyelerine saygılı davranacağımı ve verdiğim bilgilerin doğru olduğunu onaylıyorum</span>
+                            </label>
+                        </div>
+                        <div class="submit-row">
+                            <p>Başvurunu göndermeden önce tüm zorunlu alanları doldurduğundan ve doğru doldurduğundan emin ol </p>
+                            <button class="submit-button" id="submitButton" type="submit" disabled>Başvuruyu gönder</button>
+                        </div>
+                    </section>
+                </form>
+            </section>
+
+            <section id="adminPanelScreen" class="card admin-card hidden">
+                <div class="admin-header">
+                    <div>
+                        <p class="eyebrow">Yönetim</p>
+                        <h1>Başvuru inceleme paneli</h1>
+                    </div>
+                    <button class="logout-button" type="button" onclick="cikisYap()">Güvenli çıkış</button>
+                </div>
+                <div class="admin-tools">
+                    <div class="folder-container">
+                        <button id="folderOyuncu" class="folder-btn active" type="button" onclick="klasorDegistir('Oyuncu')">Oyuncu (<span id="countOyuncu">0</span>)</button>
+                        <button id="folderWhitelist" class="folder-btn" type="button" onclick="klasorDegistir('Whitelist')">Whitelist (<span id="countWhitelist">0</span>)</button>
+                        <button id="folderMod" class="folder-btn" type="button" onclick="klasorDegistir('Moderatör')">Moderatör (<span id="countMod">0</span>)</button>
+                        <button id="folderYetkili" class="folder-btn" type="button" onclick="klasorDegistir('Yetkili')">Yetkili (<span id="countYetkili">0</span>)</button>
+                        <button id="folderVerifyed" class="folder-btn" type="button" onclick="klasorDegistir('Verifyed')">Doğrulanmış kullanıcı (<span id="countVerifyed">0</span>)</button>
+                        <button id="folderSecurity" class="folder-btn" type="button" onclick="klasorDegistir('Security')">Güvenlik (<span id="countSecurity">0</span>)</button>
+                        <button id="folderAtkif" class="folder-btn" type="button" onclick="klasorDegistir('Atkif üye')">Aktif üye (<span id="countAtkif">0</span>)</button>
+                        <button id="folderTerorist" class="folder-btn" type="button" onclick="klasorDegistir('Terorist')">Terorist (<span id="countTerorist">0</span>)</button>
+                    </div><button id="folderObur" class="folder-btn" type="button" onclick="klasorDegistir('Obur üye')">Obur üye (<span id="countObur">0</span>)</button>
+                    <button class="refresh-button" type="button" onclick="verileriYenile()">Yenile</button>
+                </div>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Discord</th>
+                                <th>Yaş</th>
+                                <th id="thDinamik">Karakter adı</th>
+                                <th>Durum</th>
+                                <th>Değerlendirme</th>
+                            </tr>
+                        </thead>
+                        <tbody id="basvuruListesi"></tbody>
+                    </table>
+                </div>
+                <p id="adminConnectionNotice" class="notice hidden"></p>
+                <p class="notice">Başvuru yanıtlarının tamamını görmek için listedeki başvurunun detayını açın</p>
+            </section>
+        </main>
+
+            <script src="index.js"></script>
+    </body>
+    </html>
